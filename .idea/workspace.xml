@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a79880da-2f50-4162-9fc8-af5d248d976f" name="Default Changelist" comment="first push">
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/bisuportal.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/component/configLayout.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/component/customLayout.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/component/customPageheader.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/component/userCard.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/context/AccountContext.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/jsconfig.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/_app.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/accounts/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/accounts/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/accounts/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/api/hello.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/login/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/logout/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/create.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/listOfMemo.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/schools/component/add.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/schools/component/list.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/schools/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/signin/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/users/component/createUser.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/users/component/userList.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pages/users/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/public/vercel.svg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/auth.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/fecthData.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/services/firebase.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/styles/Home.module.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/styles/globals.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="mavenHome" value="C:\Program Files\JetBrains\IntelliJ IDEA Community Edition 2020.2\plugins\maven\lib\maven3" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectId" id="1qCbTptA0gBIAIAeBJYCoXaxH4n" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a79880da-2f50-4162-9fc8-af5d248d976f" name="Default Changelist" comment="" />
+      <created>1616586532496</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1616586532496</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="first push" />
+    <option name="LAST_COMMIT_MESSAGE" value="first push" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="392" y="168" key="Vcs.Push.Dialog.v2" timestamp="1616587066309">
+      <screen x="0" y="0" width="1600" height="870" />
+    </state>
+    <state x="392" y="168" key="Vcs.Push.Dialog.v2/0.0.1600.870@0.0.1600.870" timestamp="1616587066309" />
+  </component>
+</project>
