@@ -4,12 +4,14 @@ import dynamic from 'next/dynamic'
 import CustomPageheader from '@/component/customPageheader'
 import React, { useState } from 'react';
 const { v4: uuidv4 } = require('uuid');
-
+import { db, auth } from '@/services/firebase';
+import _ from 'lodash'
 const CreateUser = dynamic(() => import('./component/createUser'))
 
 import {
     PlusSquareOutlined
 } from '@ant-design/icons';
+import CustomLayout from '@/component/customLayout';
 
     const columns = [
         {
@@ -68,12 +70,41 @@ export default function User() {
     };
 
     const handleOk = (values) => {
-        console.log(values);
         setModalText('The modal will be closed after two seconds');
-        setConfirmLoading(true);
+        // setConfirmLoading(true);
+
+        auth().onAuthStateChanged((user) => {
+            
+
+            if (user) {
+                let ref = db.collection('User').doc(user.email)
+
+                ref.get()
+                .then( snapshot => {  //DocSnapshot
+                    if (snapshot.exists) {
+                        let userData = snapshot.data()
+                        console.log(userData); 
+                   
+                        const newValues = _.clone(values)
+                        newValues.school = userData.school
+                        console.log(values);
+
+                        db.collection('User').doc(newValues.email).set(newValues)
+                        .then(function() {
+                            console.log('created');
+                        })
+                        .catch(function(error) {
+                            console.error("Error adding document: ", error);
+                        });
+                    }
+                })
+            } else {
+                router.push("/login")
+            }
+        })
+
         setTimeout(() => {
-        setVisible(false);
-        setConfirmLoading(false);
+        
         }, 2000);
     };
 
@@ -82,8 +113,7 @@ export default function User() {
         setVisible(false);
     };
     
-    console.log(genKey)
-    return (<>
+    return (<CustomLayout>
         <CustomPageheader title={'Users'} extra={[
             <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={showModal}>Add</Button>
         ]}>
@@ -109,5 +139,5 @@ export default function User() {
         >
             <CreateUser handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
         </Modal>
-    </>)
+    </CustomLayout>)
 }

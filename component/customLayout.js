@@ -5,13 +5,46 @@ import {
 } from '@ant-design/icons';
 import UserCard from '@/component/UserCard'
 import { useRouter } from 'next/router'
+import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Title } = Typography;
 
-const CustomLayout = ({menu,...props}) => {
+const menu = [
+  {
+    key : "/",
+    title : "Dashboard",
+    route : "/",
+    icon :<FaChartBar />
+  },
+  {
+    key : "/records",
+    title : "Records",
+    route : "/records",
+    icon :<FaClipboardList />
+  },
+  {
+    key : "/schools",
+    title : "Schools",
+    route : "/schools",
+    icon :<FaSchool />
+  },
+  {
+    key : "/users",
+    title : "Users",
+    route : "/users",
+    icon :<FaUserCog />
+  },
+  {
+    key : "logout",
+    title : "Log out",
+    route : "/logout",
+    icon :<FaSignOutAlt />
+  }
+]
+const CustomLayout = ({...props}) => {
     const router = useRouter()
     const [routes, setRoutes] = useState("")
     const [state, setState] = useState({
@@ -49,7 +82,7 @@ const CustomLayout = ({menu,...props}) => {
         else if(router.pathname.includes("/schools")){
           setRoutes("/schools")
         }
-        else if(router.pathname.includes("/signin")) {
+        else if(router.pathname.includes("/signin") || router.pathname.includes("/login")) {
           setState({...state,collapsedWidth:0,collapsed:true,visibility:'collapse',changeHeader:true})
         }
         else{

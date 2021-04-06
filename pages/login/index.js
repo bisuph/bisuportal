@@ -44,7 +44,19 @@ export default function Demo () {
 
   function onFinish (values) {
     console.log('Success:', values);
+    const {email,password} = values
     try {
+      auth().signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Signed in
+        var user = userCredential.user;
+        // ...
+      })
+      .catch((error) => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+      });
+
       //  signup(state.email, state.password);
     } catch (error) {
       // setState({ error: error.message });
@@ -56,7 +68,6 @@ export default function Demo () {
   };
 
   async function googleSignIn() {
-    alert()
     try {
       await signInWithGoogle();
     } catch (error) {
@@ -83,12 +94,12 @@ export default function Demo () {
                 onFinishFailed={onFinishFailed}
                 >
                 <Form.Item
-                    label="Username"
-                    name="username"
+                    label="Email"
+                    name="email"
                     rules={[
                     {
                         required: true,
-                        message: 'Please input your username!',
+                        message: 'Please input your email!',
                     },
                     ]}
                 >
@@ -113,7 +124,7 @@ export default function Demo () {
                 </Form.Item>
                       
                 <Button type="primary" block style={{marginBottom:10}} htmlType="submit">
-                  Submit
+                  Log in
                 </Button>
 
                 <Button block icon={<GooglePlusOutlined />} onClick={()=> googleSignIn()}>

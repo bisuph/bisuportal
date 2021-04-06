@@ -1,5 +1,4 @@
 import '../styles/globals.css'
-import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
 import {AccountProvider} from '../context/AccountContext'
 import { Layout } from 'antd';
 
@@ -19,44 +18,10 @@ Router.events.on('routeChangeError', () => NProgress.done());
 const MyApp = ({ Component, pageProps }) => {
     
 
-    const sideBarItems = [
-      {
-        key : "/",
-        title : "Dashboard",
-        route : "/",
-        icon :<FaChartBar />
-      },
-      {
-        key : "/records",
-        title : "Records",
-        route : "/records",
-        icon :<FaClipboardList />
-      },
-      {
-        key : "/schools",
-        title : "Schools",
-        route : "/schools",
-        icon :<FaSchool />
-      },
-      {
-        key : "/users",
-        title : "Users",
-        route : "/users",
-        icon :<FaUserCog />
-      },
-      {
-        key : "logout",
-        title : "Log out",
-        route : "/logout",
-        icon :<FaSignOutAlt />
-      }
-    ]
     return (
       <AccountProvider >
       <Layout style={{ minHeight: '100vh' }}>
-      <CustomLayout menu={sideBarItems} >
         <Component {...pageProps} />
-      </CustomLayout>
       </Layout>
       </AccountProvider>
     );

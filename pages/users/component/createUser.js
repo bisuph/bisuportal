@@ -3,6 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '@/services/firebase';
 import { getCampuses, getOffices } from '@/services/fecthData';
+import { useRouter } from 'next/router';
 
 const layouts = {
     labelCol: {
@@ -35,27 +36,40 @@ const cityData = {
 };
 
 const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
+    const [form] = Form.useForm();
+    // form.setFieldsValue({
+    //     name: '',
+    //     email:'',
+    //     office:''
+    //   });
+    const router =  useRouter()
+    const [loading, setLoading] = useState(false);
     const [userCred, setUserCred] = useState(null);
-    const [cities, setCities] = useState(cityData[provinceData[0]]);
-    const [secondCity, setSecondCity] = useState(cityData[provinceData[0]][0]);
-
     const [campuses, setCampuses] = useState([])
     const [office, setOffice] = useState([])
     useEffect(() => {
         var unsubscribe = null
+        setLoading(true)
         auth().onAuthStateChanged((user) => {
           if (user) {
             
             let ref = db.collection('User').doc(user.email)
+
             ref.get()
             .then( snapshot => {  //DocSnapshot
                 if (snapshot.exists) {
                     setUserCred(snapshot.data())
                     let userData = snapshot.data()
-                    var docRefCamp = getCampuses(userData.school)
-                    docRefCamp.then(docsCamp => {
-                        setCampuses(docsCamp)
-                    })
+                    if(userData.access === 'Super Admin'){
+                        var docRefCamp = getCampuses(userData.school)
+                        docRefCamp.then(docsCamp => {
+                            setCampuses(docsCamp)
+                        })
+                    }
+                    else{
+                        form.setFieldsValue({ campus: userData.campus});
+                    }
+                    
 
                     var docRefOff = getOffices(userData.school)
                     docRefOff.then(docsOff => {
@@ -68,44 +82,26 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
             })
             
           } else {
-          router.push("/login")
+            router.push("/login")
           }
         })
+        setLoading(false)
       
         return () => {
         //   unsubscribe()
         }
     },[genKey])
 
-    useEffect(()=>{
-
-    },[])
-
-
-    const handleCampusChange = value => {
-        console.log(value)
-        db.collection('School').doc(userData.school).collection("Campuses").onSnapshot(function (querySnapshot) {
-            querySnapshot.docs.map((doc,i) => {
-                campusArr.push(doc.id)
-            });
-            setCampuses(campusArr)
-            // setDataSource(data)
-        });
-    };
-    
-    const onSecondCityChange = value => {
-        setSecondCity(value);
-    };
-
     return(
-            <Form key={genKey} {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
+            <Form key={genKey} form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 
                 <Form.Item
-                    name={['user', 'email']}
+                    name={'email'}
                     label="Email"
                     rules={[
                         {
                         type: 'email',
+                        required: true,
                         },
                     ]}
                     tooltip={{
@@ -117,7 +113,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 </Form.Item>
 
                 <Form.Item
-                    name={['user', 'name']}
+                    name={'name'}
                     label="Display name"
                     rules={[
                         {
@@ -132,23 +128,41 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 <Input autoComplete={'off'} />
                 </Form.Item>
 
-                <Form.Item name={['user', 'campus']} label="Campus">
-                    <Select style={{ width: '100%' }} >
-                        {campuses.map(campus => (
-                        <Option key={campus}>{campus}</Option>
-                        ))}
-                    </Select>
+                <Form.Item name={'campus'} label="Campus" 
+                    rules={[
+                        {
+                        required: true,
+                        },
+                    ]}
+                >
+                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.access !== 'Super Admin' ? true : false}>
+                            {campuses.map(campus => (
+                                <Option key={campus}>{campus}</Option>
+                            ))}
+                        </Select>
+                    
                 </Form.Item>
 
-                <Form.Item name={['user', 'offices']} label="Offices">
-                    <Select style={{ width: '100%' }} >
+                <Form.Item name={'offices'} label="Offices" loading={loading} 
+                    rules={[
+                        {
+                        required: true,
+                        },
+                    ]}
+                >
+                    <Select style={{ width: '100%' }}  >
                         {office.map(offices => (
                         <Option key={offices}>{offices}</Option>
                         ))}
                     </Select>
                 </Form.Item>
 
-                <Form.Item wrapperCol={{ ...layouts.wrapperCol}}>
+                <Form.Item wrapperCol={{ ...layouts.wrapperCol}}
+                    rules={[
+                        {
+                        required: true,
+                        },
+                    ]}>
                 <Space>
                     
                     <Button type="primary" htmlType="submit" loading={confirmLoading}>

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 
 const layouts = {
     labelCol: {
-        span: 8,
+        span: 24,
     },
     wrapperCol: {
         span: 24,
@@ -56,7 +56,7 @@ const Signin = () => {
         <Col {...{md:8,lg:8,xl:8}}></Col>
         <Col {...{xs:24,sm:24,md:8,lg:8,lg:8}}>
         <div className="site-card-border-less-wrapper">
-            <Card title="Sign-In" bordered={false} style={{ width: '100%' }}>
+            <Card title="Sign-In" bordered={false} style={{ width: '100%' ,marginTop:100, borderRadius:'8px', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}>
             <Form {...layouts} layout="vertical" name="nest-messages" onFinish={onFinish} validateMessages={validateMessages}>
                 
                 <Form.Item
@@ -91,28 +91,42 @@ const Signin = () => {
                 <Input />
                 </Form.Item>
 
-                <Form.Item name={['user', 'website']} label="School">
-                    <Select defaultValue={provinceData[0]} style={{ width: '100%' }} onChange={handleProvinceChange}>
-                        {provinceData.map(province => (
-                        <Option key={province}>{province}</Option>
-                        ))}
-                    </Select>
+                <Form.Item
+                    name="password"
+                    label="Password"
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Please input your password!',
+                    },
+                    ]}
+                    hasFeedback
+                >
+                    <Input.Password />
                 </Form.Item>
 
-                <Form.Item name={['user', 'website']} label="Campus">
-                    <Select defaultValue={provinceData[0]} style={{ width: '100%' }} onChange={handleProvinceChange}>
-                        {provinceData.map(province => (
-                        <Option key={province}>{province}</Option>
-                        ))}
-                    </Select>
-                </Form.Item>
+                <Form.Item
+                    name="confirm"
+                    label="Confirm Password"
+                    dependencies={['password']}
+                    hasFeedback
+                    rules={[
+                    {
+                        required: true,
+                        message: 'Please confirm your password!',
+                    },
+                    ({ getFieldValue }) => ({
+                        validator(_, value) {
+                        if (!value || getFieldValue('password') === value) {
+                            return Promise.resolve();
+                        }
 
-                <Form.Item name={['user', 'website']} label="Offices">
-                    <Select defaultValue={provinceData[0]} style={{ width: '100%' }} onChange={handleProvinceChange}>
-                        {provinceData.map(province => (
-                        <Option key={province}>{province}</Option>
-                        ))}
-                    </Select>
+                        return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                        },
+                    }),
+                    ]}
+                >
+                    <Input.Password />
                 </Form.Item>
 
                 <Form.Item wrapperCol={{ ...layouts.wrapperCol, offset: 8 }}>
