@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
-import { auth, db } from '@/services/firebase';
+import { auth, db } from './../services/firebase';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Title } = Typography;

@@ -1,13 +1,13 @@
 import { Tabs, Row, Col, Card, Layout, Popconfirm, Button , Table, Modal } from 'antd';
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
-import CustomPageheader from '@/component/customPageheader'
+import CustomPageheader from '../../component/customPageheader'
 import React, { useEffect, useState } from 'react';
 const { v4: uuidv4 } = require('uuid');
-import { db, auth } from '@/services/firebase';
+import { db, auth } from '../../services/firebase';
 import _ from 'lodash'
 const CreateUser = dynamic(() => import('./component/createUser'))
-import CustomLayout from '@/component/customLayout';
+import CustomLayout from '../../component/customLayout';
 
 import {
     PlusSquareOutlined, DeleteOutlined

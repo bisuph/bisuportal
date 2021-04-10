@@ -1,7 +1,7 @@
 import { Form, Input, notification, Button, Row, Col, Card } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '@/services/firebase';
+import { auth, db } from '../../services/firebase';
 import { useRouter } from 'next/router';
 
 const layouts = {
@@ -26,7 +26,7 @@ const validateMessages = {
 };
 /* eslint-enable no-template-curly-in-string */
 
-const Signin = () => {
+const Signup = () => {
     const router = useRouter()
 
     useEffect(() => {
@@ -163,4 +163,4 @@ const Signin = () => {
     )
 }
 
-export default Signin;
+export default Signup;

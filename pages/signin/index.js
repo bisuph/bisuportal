@@ -1,5 +1,4 @@
 import { Form, Input, Button, Checkbox, Layout, Row, Col, Card, Typography, message } from 'antd';
-import { signup, signInWithGoogle  } from '../../services/auth';
 import { auth } from '../../services/firebase';
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/router'
@@ -65,18 +64,6 @@ export default function Demo () {
     console.log('Failed:', errorInfo);
   };
 
-  async function googleSignIn() {
-    try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.log(error)
-      // setState({ error: error.message });
-    }
-  }
-  
-  const wrapper = {
-    
-  }
   return (
     <>
     <Row justify="center">

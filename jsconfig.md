@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "baseUrl": ".",
+      "module":"commonjs",
       "paths": {
         "@/services/*": ["services/*"],
         "@/component/*": ["component/*"],
@@ -8,4 +9,5 @@
       }
     },
     "exclude": ["node_modules"]
+    
 }

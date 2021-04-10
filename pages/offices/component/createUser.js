@@ -1,9 +1,6 @@
 import { Form, Input, Select, Button, Row, Col, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
-import { db, auth } from '@/services/firebase';
-import { getCampuses, getOffices } from '@/services/fecthData';
-import { useRouter } from 'next/router';
 
 const layouts = {
     labelCol: {

@@ -2,12 +2,12 @@ import { PageHeader, Upload, Card, Tabs, Layout, Space, Button, Form, Input, Rad
 import { PlusSquareOutlined, SnippetsOutlined } from '@ant-design/icons';
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState} from 'react';
-import CustomPageheader from '@/component/customPageheader'
+import CustomPageheader from '../../component/customPageheader'
 import { useRouter } from 'next/router'
-import CustomLayout from '@/component/customLayout';
-import { auth, db } from '@/services/firebase';
+import CustomLayout from '../../component/customLayout';
+import { auth, db } from '../../services/firebase';
 import { property } from 'lodash';
-import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '@/services/fecthData';
+import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../services/fecthData';
 
 const ListOfMemo = dynamic(() => import('./listOfMemo'))
 

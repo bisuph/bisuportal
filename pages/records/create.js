@@ -4,10 +4,10 @@ import { InboxOutlined , InfoCircleOutlined, SnippetsOutlined } from '@ant-desig
 import dynamic from 'next/dynamic'
 import styled from 'styled-components'
 import React, { useState, useEffect,useContext } from 'react';
-import { auth, db, storage } from '@/services/firebase';
-import CustomPageheader from '@/component/customPageheader'
-import CustomLayout from '@/component/customLayout';
-import { getRecords } from '@/services/fecthData';
+import { auth, db, storage } from '../../services/firebase';
+import CustomPageheader from '../../component/customPageheader'
+import CustomLayout from '../../component/customLayout';
+import { getRecords } from '../../services/fecthData';
 import _ from 'lodash'
 import { set } from 'nprogress';
 

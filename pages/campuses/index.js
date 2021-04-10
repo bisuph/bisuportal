@@ -1,14 +1,14 @@
 import { PageHeader, Row, Col, Card, Layout, Button } from 'antd';
 import { useRouter } from 'next/router'
-import UserCard from '@/component/UserCard'
+import UserCard from '../../component/UserCard'
 import React, { useContext, useEffect, useState } from 'react';
 import {
     PlusSquareOutlined
   } from '@ant-design/icons';
-import CustomLayout from '@/component/customLayout';
-import { auth, db } from '@/services/firebase';
+import CustomLayout from '../../component/customLayout';
 import Modal from 'antd/lib/modal/Modal';
 import CreateUser from './component/createUser';
+import { auth, db } from '../../services/firebase';
 const { v4: uuidv4 } = require('uuid');
   
 

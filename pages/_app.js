@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 
 import React, { useState, useEffect,useContext } from 'react';
 
-import CustomLayout from '@/component/customLayout'
+import CustomLayout from './../component/customLayout'
 import Router from 'next/router';
 import NProgress from 'nprogress'; //nprogress module
 import 'nprogress/nprogress.css'; //styles of nprogress

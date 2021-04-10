@@ -1,4 +1,4 @@
-import { auth, db } from '@/services/firebase';
+import { auth, db } from '../../services/firebase';
 import { List, Avatar, Button, Space, Typography, Tag, Divider, Card, Skeleton } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
 import { UploadOutlined, FolderOpenOutlined, TwitterOutlined, PaperClipOutlined } from '@ant-design/icons';

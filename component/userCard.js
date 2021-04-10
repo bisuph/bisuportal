@@ -1,7 +1,7 @@
 import { Card, Avatar, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
 import { useState } from 'react';
-import { db } from '@/services/firebase';
+import { db } from './../services/firebase';
 
 const { Meta } = Card;
 

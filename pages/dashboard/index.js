@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import styles from '../../styles/Home.module.css'
 import React, { useState, useEffect,useContext } from 'react';
-import {AccountContext} from '@/context/AccountContext'
+import {AccountContext} from '../../context/AccountContext'
 
 
 
