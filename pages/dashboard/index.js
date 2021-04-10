@@ -7,8 +7,6 @@ import {AccountContext} from '@/context/AccountContext'
 
 export default function Dashboard() {
   const accountContext = useContext(AccountContext)
-  console.log(accountContext)
-  
 
   return (
     <div className={styles.container}>
@@ -22,7 +20,7 @@ export default function Dashboard() {
           Welcome to 
         </h1>
         <h4 className={styles.title}>
-          <a href="https://nextjs.org">Money Management System!</a>
+          <a href="https://nextjs.org">BISU PORTAL!</a>
         </h4>
 
         <p className={styles.description}>

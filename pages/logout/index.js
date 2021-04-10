@@ -31,7 +31,6 @@ export default function Demo () {
 
   useEffect(() => {
     auth().onAuthStateChanged((user) => {
-      console.log(user);
       if (user) {
         // router.push("/")
       } 

@@ -37,11 +37,7 @@ const cityData = {
 
 const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
     const [form] = Form.useForm();
-    // form.setFieldsValue({
-    //     name: '',
-    //     email:'',
-    //     office:''
-    //   });
+   
     const router =  useRouter()
     const [loading, setLoading] = useState(false);
     const [userCred, setUserCred] = useState(null);
@@ -60,18 +56,23 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 if (snapshot.exists) {
                     setUserCred(snapshot.data())
                     let userData = snapshot.data()
-                    if(userData.access === 'Super Admin'){
-                        var docRefCamp = getCampuses(userData.school)
+
+                    if(userData.role === 'Super Admin'){
+
+                        var docRefCamp = getCampuses()
                         docRefCamp.then(docsCamp => {
+                    console.log(docsCamp)
+
                             setCampuses(docsCamp)
                         })
                     }
                     else{
                         form.setFieldsValue({ campus: userData.campus});
+                        form.setFieldsValue({ role: 'Member'});
                     }
                     
 
-                    var docRefOff = getOffices(userData.school)
+                    var docRefOff = getOffices()
                     docRefOff.then(docsOff => {
                         setOffice(docsOff)
                     })
@@ -82,7 +83,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
             })
             
           } else {
-            router.push("/login")
+            router.push("/signin")
           }
         })
         setLoading(false)
@@ -112,20 +113,19 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 <Input autoComplete={'off'} />
                 </Form.Item>
 
-                <Form.Item
-                    name={'name'}
-                    label="Display name"
+                <Form.Item name={'role'} label="Role" 
                     rules={[
                         {
                         required: true,
                         },
                     ]}
-                    tooltip={{
-                        title: 'Tooltip with customize icon',
-                        icon: <InfoCircleOutlined />,
-                    }}
                 >
-                <Input autoComplete={'off'} />
+                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.role !== 'Super Admin' ? true : false}>
+                                <Option key={'Super Admin'}>{'Super Admin'}</Option>
+                                <Option key={'Admin'}>{'Admin'}</Option>
+                                <Option key={'Member'}>{'Member'}</Option>
+                        </Select>
+                    
                 </Form.Item>
 
                 <Form.Item name={'campus'} label="Campus" 
@@ -135,7 +135,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         },
                     ]}
                 >
-                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.access !== 'Super Admin' ? true : false}>
+                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.role !== 'Super Admin' ? true : false}>
                             {campuses.map(campus => (
                                 <Option key={campus}>{campus}</Option>
                             ))}

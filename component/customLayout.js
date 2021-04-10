@@ -2,12 +2,14 @@ import Link from 'next/link'
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
+  CoffeeOutlined
 } from '@ant-design/icons';
 import UserCard from '@/component/UserCard'
 import { useRouter } from 'next/router'
 import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
+import { auth, db } from '@/services/firebase';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -26,26 +28,28 @@ const menu = [
     icon :<FaClipboardList />
   },
   {
-    key : "/schools",
-    title : "Schools",
-    route : "/schools",
+    key : "/campuses",
+    title : "Campuses",
+    route : "/campuses",
     icon :<FaSchool />
+  },
+  {
+    key : "/offices",
+    title : "Offices",
+    route : "/offices",
+    icon :<CoffeeOutlined />
   },
   {
     key : "/users",
     title : "Users",
     route : "/users",
-    icon :<FaUserCog />
+    icon :<FaUserCog />,
+    access : ['Super Admin','Admin']
   },
-  {
-    key : "logout",
-    title : "Log out",
-    route : "/logout",
-    icon :<FaSignOutAlt />
-  }
 ]
 const CustomLayout = ({...props}) => {
     const router = useRouter()
+    const [cred, setCred] = useState("")
     const [routes, setRoutes] = useState("")
     const [state, setState] = useState({
         broken:false,
@@ -74,7 +78,24 @@ const CustomLayout = ({...props}) => {
         setState({...state,drawer:false});
     };
 
+    const checkAuth = () => {
+      auth().onAuthStateChanged((user) => {
+        if (user) {
+          let ref = db.collection('User').doc(user.email)
+
+          ref.get()
+          .then( snapshot => {  //DocSnapshot
+              if (snapshot.exists) {
+                setCred(snapshot.data().role)
+              }
+          })
+        } else {
+          router.push("/signin")
+        }
+      })
+    }
     useEffect(()=>{
+      checkAuth()
       if(router){
         if(router.pathname.includes("/records")){
           setRoutes("/records")
@@ -82,7 +103,7 @@ const CustomLayout = ({...props}) => {
         else if(router.pathname.includes("/schools")){
           setRoutes("/schools")
         }
-        else if(router.pathname.includes("/signin") || router.pathname.includes("/login")) {
+        else if(router.pathname.includes("/signin") || router.pathname.includes("/signin")) {
           setState({...state,collapsedWidth:0,collapsed:true,visibility:'collapse',changeHeader:true})
         }
         else{
@@ -90,6 +111,16 @@ const CustomLayout = ({...props}) => {
         }
       }
     },[router])
+
+
+    const signOut = () => {
+      auth().signOut().then(() => {
+        router.push('/signin')
+      }).catch((error) => {
+        // An error happened.
+      });
+      
+    }
 
     return(
         <>
@@ -107,16 +138,33 @@ const CustomLayout = ({...props}) => {
                 menu &&
                 (
                     menu.map((items,i)=>{
-                        return (
-                          <Menu.Item key={items.key} icon={items.icon}>
-                              <Link href={items.route}>
-                                  {items.title}
-                              </Link>
-                          </Menu.Item>
-                        )
+                        if(items?.access){
+                          if(items.access.includes(cred)){
+                            return (
+                              <Menu.Item key={items.key} icon={items.icon}>
+                                  <Link href={items.route}>
+                                      {items.title}
+                                  </Link>
+                              </Menu.Item>
+                            )
+                          }
+                        }
+                        else{
+                          return (
+                            <Menu.Item key={items.key} icon={items.icon}>
+                                <Link href={items.route}>
+                                    {items.title}
+                                </Link>
+                            </Menu.Item>
+                          )
+                        }
+                        
                     })
                 )
             }
+            <Menu.Item key={'logout'} icon={<FaSignOutAlt />} onClick={()=>signOut()}>
+                    Log out
+            </Menu.Item>
           </Menu>
         </Sider>
         <Drawer
@@ -154,9 +202,9 @@ const CustomLayout = ({...props}) => {
           >
               {props.children}
           </Content>
-          <Affix offsetBottom={10}>
+          {/* <Affix offsetBottom={10}>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
-          </Affix>
+          </Affix> */}
         </Layout>
         </>
     )
