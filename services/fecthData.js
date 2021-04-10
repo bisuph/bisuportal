@@ -1,4 +1,4 @@
-import { auth, db } from "../services/firebase";
+import { auth, db } from "./firebase";
 
 export async function getCampuses() {
     const snapshot = await  db.collection("Campuses").get()
