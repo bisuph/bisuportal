@@ -5,7 +5,7 @@ import { db } from '@/services/firebase';
 
 const { Meta } = Card;
 
-const UserCard = ({title,description,avatar,cover}) => {
+export default function UserCard  ({title,description,avatar,cover}) {
     const [confirmLoading, setConfirmLoading] = useState(false);
 
     const onDelete = (title) => {
@@ -40,5 +40,3 @@ const UserCard = ({title,description,avatar,cover}) => {
         </Card>
     )
 }
-
-export default UserCard;

@@ -10,17 +10,9 @@ const fakeDataUrl = `https://randomuser.me/api/?results=${count}&inc=name,gender
 
 
 const ListOfMemo = ({...props}) => {
-    const {state,setState} = props
+    const {state,initLoading,list} = props
 
-    const { initLoading, loading, list } = state;
-
-    const IconText = ({ icon, text }) => (
-      <Space>
-        {React.createElement(icon)}
-        {text}
-      </Space>
-    );
-
+    console.log(initLoading)
     return(
         <List
           className="demo-loadmore-list"
@@ -37,13 +29,13 @@ const ListOfMemo = ({...props}) => {
 
           const forAction = []
           if(files){
-              files.map((val) => {
-                forAction.push(<a href={val.url}><PaperClipOutlined /> {val.name}</a>)
+              files.map((val,i) => {
+                forAction.push(<a href={val.url} key={i}><PaperClipOutlined /> {val.name}</a>)
               })
           }
 
           return (
-            <List.Item
+            <List.Item key={i}
                 // actions={[<a key="list-loadmore-edit">edit</a>, <a key="list-loadmore-more">more</a>]}
               >
                 <Skeleton avatar title={false} loading={item.loading} active>
@@ -55,12 +47,12 @@ const ListOfMemo = ({...props}) => {
                     description={`Uploaded by : ${item.uploader} |  Campus : ${item.campus} | Office : ${item.offices}`}
                   />
                   <div>
-                  {files.map((val) => {
-                    return(<a href={val.url} target="_blank"><PaperClipOutlined /> {val.name}</a>)
+                  {files.map((val,i) => {
+                    return(<a href={val.url} target="_blank" key={i}><PaperClipOutlined /> {val.name}</a>)
                   })}
                   </div>
                 </Skeleton>
-              </List.Item>
+            </List.Item>
           )
         }}
       />

@@ -21,7 +21,8 @@ export default function Records({...props}) {
     })
 
     props.state = state
-    props.setState = setState
+    props.list = state.list
+    props.initLoading = state.initLoading
    
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {

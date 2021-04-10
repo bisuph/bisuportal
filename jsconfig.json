@@ -6,5 +6,5 @@
         "@/component/*": ["component/*"],
         "@/context/*": ["context/*"]
       }
-    }
+    },
 }

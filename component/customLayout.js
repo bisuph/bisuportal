@@ -4,7 +4,6 @@ import {
   MenuFoldOutlined,
   CoffeeOutlined
 } from '@ant-design/icons';
-import UserCard from '@/component/UserCard'
 import { useRouter } from 'next/router'
 import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
