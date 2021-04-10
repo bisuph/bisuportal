@@ -7,4 +7,5 @@
         "@/context/*": ["context/*"]
       }
     },
+    "exclude": ["node_modules"]
 }

@@ -36,13 +36,11 @@ export default function Schools() {
                 .onSnapshot((querySnapshot) => {
                     const list  = []
                     querySnapshot.forEach((doc) => {
-                    console.log(doc.data())
 
                         var newList = doc.data()
                         newList.id = doc.id
                         list.push(newList)
                     });
-                    console.log(list)
                     setData(list)
                     // setConfirmLoading(false)
                 });
@@ -58,7 +56,6 @@ export default function Schools() {
         setGenKey(uuidv4())
         setVisible(true);
     };
-    console.log(genKey)
 
     const handleOk = (values) => {
         // setConfirmLoading(true);
