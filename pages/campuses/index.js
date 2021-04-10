@@ -1,6 +1,6 @@
 import { PageHeader, Row, Col, Card, Layout, Button } from 'antd';
 import { useRouter } from 'next/router'
-import UserCard from '../../component/UserCard'
+import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
 import {
     PlusSquareOutlined
