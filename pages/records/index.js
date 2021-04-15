@@ -1,5 +1,5 @@
-import { PageHeader, Upload, Card, Tabs, Layout, Space, Button, Tag, Input, Divider, Table } from 'antd';
-import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined } from '@ant-design/icons';
+import { PageHeader, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Modal, Table } from 'antd';
+import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState} from 'react';
 import CustomPageheader from '../../component/customPageheader'
@@ -8,11 +8,13 @@ import CustomLayout from '../../component/customLayout';
 import { auth, db } from '../../services/firebase';
 import Highlighter from 'react-highlight-words';
 import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../services/fecthData';
+const { TabPane } = Tabs;
 
-const ListOfMemo = dynamic(() => import('./listOfMemo'))
+const Create = dynamic(() => import('./create'))
 const { Search } = Input;
 
 export default function Records({...props}) {
+    const [visible, setVisible] = useState(false);
     const router = useRouter()
     const [state, setState] = useState({
         initLoading: true,
@@ -21,6 +23,7 @@ export default function Records({...props}) {
     })
 
     const [cred, setCred] = useState(null)
+    const [defaultProps, setDefaultProps] = useState(null)
 
 
     props.state = state
@@ -28,6 +31,14 @@ export default function Records({...props}) {
     props.initLoading = state.initLoading
    
     useEffect(()=>{
+        refresh()
+    },[db])
+
+    function callback(key) {
+        refresh()
+    }
+
+    const refresh = () => {
         auth().onAuthStateChanged((user) => {
             if(user){
 
@@ -72,8 +83,7 @@ export default function Records({...props}) {
                 })
             }
         })
-    
-    },[db])
+    }
 
     const [search,setSearch] = useState({
     searchText: '',
@@ -138,6 +148,15 @@ export default function Records({...props}) {
     setSearch({ searchText: '' });
     };
     
+    const onPopConfirm = (record) => {
+        db.collection("UploadedFiles").doc(record.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+            refresh()
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
+
     const columns = [
         {
           title: 'Description',
@@ -184,6 +203,20 @@ export default function Records({...props}) {
               </>
             ),
         },
+        {
+            title: 'Action',
+            key: 'operation',
+            fixed: 'right',
+            width: 100,
+            render: (record) => 
+            <Space>
+                <Button icon={<EditOutlined />} onClick={() => {setVisible(true),setDefaultProps(record)}} />
+                <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
+                    <Button  icon={<DeleteOutlined />} size={'middles'} />
+                </Popconfirm>
+            </Space>
+        
+        },
 
         // {
         //   title: 'Uploaded by',
@@ -194,17 +227,30 @@ export default function Records({...props}) {
       ];
     return (
         <CustomLayout >
-        <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} extra={[
-            cred?.role === 'Member' ?
-            <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={()=>router.push("/records/create")}>
-                Add
-            </Button>
-            :
-            <></>
-        ]}>
-                <Table columns={columns} dataSource={state.list} />
+        <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
+            <Tabs onChange={callback} type="card">
+                <TabPane tab="List of Records" key="1">
+                    <Table columns={columns} dataSource={state.list} />
+                </TabPane>
+                <TabPane tab="Create Record" key="2">
+                    <Create />
+                </TabPane>
+               
+            </Tabs>
+            
+            <Modal
+            title="Update"
+            centered
+            visible={visible}
+            okButtonProps={{ hidden: true }}
+            cancelButtonProps={{ hidden: true }}
+            width={1000}
+            >
+            <Create default={defaultProps} onHide={setVisible}/>
+            </Modal>
         </CustomPageheader>
         </CustomLayout>
+
     )
 }
 

@@ -96,9 +96,6 @@ export default function User() {
                         newValues.school = userData.school
 
                         if(newValues.offices == 'Administrative and Management Records'){
-                            newValues.role = 'Super Admin'
-                        }
-                        else if(newValues.offices == 'Campus Director'){
                             newValues.role = 'Admin'
                         }
                         else {

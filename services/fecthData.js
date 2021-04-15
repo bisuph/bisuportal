@@ -22,7 +22,12 @@ export async function getUploadedFiles() {
 
 export async function getUploadedFilesPerUser(office,campus) {
     const snapshot = await  db.collection("UploadedFiles").where("offices", "==", office).where("campus", "==", campus).get()
-    return snapshot.docs.map(doc => doc.data());
+    return snapshot.docs.map(doc => {
+        // doc.data().id = doc.id
+        var data = doc.data()
+        data.id = doc.id
+        return data
+    });
 }
 
 export async function getUploadedFilesPerAdmin(campus) {
