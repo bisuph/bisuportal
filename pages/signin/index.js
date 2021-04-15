@@ -1,6 +1,6 @@
 import { Form, Input, Button, Checkbox, Layout, Row, Col, Card, Typography, message } from 'antd';
 import { auth } from '../../services/firebase';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
@@ -25,6 +25,7 @@ const { Title } = Typography;
 export default function Demo () {
   const [form] = Form.useForm();
   const router = useRouter()
+  const [loading,setLoading] = useState(false)
 
   useEffect(() => {
     auth().onAuthStateChanged((user) => {
@@ -40,15 +41,17 @@ export default function Demo () {
 
   function onFinish (values) {
     const {email,password} = values
-
+    setLoading(true)
     try {
       auth().signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         // Signed in
+        setLoading(false)
         var user = userCredential.user;
         // ...
       })
       .catch((error) => {
+        setLoading(false)
         message.error('Invalid email/password.');
         var errorCode = error.code;
         var errorMessage = error.message;
@@ -113,8 +116,8 @@ export default function Demo () {
                 </Form.Item>
 
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" className="login-form-button" style={{width:'100%',borderRadius:'6px',height:'48px'}} size={'large'}>
-                    <Title level={4} strong={true} style={{color:'white'}}>Log In</Title>
+                  <Button loading={loading} type="primary" htmlType="submit" className="login-form-button" style={{width:'100%',borderRadius:'6px',height:'48px'}} size={'large'}>
+                    {!loading ? <Title level={4} strong={true} style={{color:'white'}}>Log In</Title> : ''}
                   </Button>
                   Or <a href="/signup">register now!</a>
                 </Form.Item>

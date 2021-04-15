@@ -24,13 +24,17 @@ const menu = [
     key : "/records",
     title : "Records",
     route : "/records",
-    icon :<FaClipboardList />
+    icon :<FaClipboardList />,
+    access : ['Member']
+
   },
   {
     key : "/campuses",
     title : "Campuses",
     route : "/campuses",
-    icon :<FaSchool />
+    icon :<FaSchool />,
+    access : ['Super Admin']
+
   },
   {
     key : "/offices",

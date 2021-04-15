@@ -56,12 +56,13 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 if (snapshot.exists) {
                     setUserCred(snapshot.data())
                     let userData = snapshot.data()
+                    form.setFieldsValue({ email: ''});
 
                     if(userData.role === 'Super Admin'){
 
                         var docRefCamp = getCampuses()
                         docRefCamp.then(docsCamp => {
-                    console.log(docsCamp)
+                        console.log(docsCamp)
 
                             setCampuses(docsCamp)
                         })
@@ -113,7 +114,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                 <Input autoComplete={'off'} />
                 </Form.Item>
 
-                <Form.Item name={'role'} label="Role" 
+                {/* <Form.Item name={'role'} label="Role" 
                     rules={[
                         {
                         required: true,
@@ -126,7 +127,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                                 <Option key={'Member'}>{'Member'}</Option>
                         </Select>
                     
-                </Form.Item>
+                </Form.Item> */}
 
                 <Form.Item name={'campus'} label="Campus" 
                     rules={[

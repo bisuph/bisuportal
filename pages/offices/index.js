@@ -20,23 +20,38 @@ export default function Offices() {
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data,setData] = useState([])
+    const [userCred,setUserCred] = useState(null)
 
     useEffect(()=>{
-        const unsubscribe = db.collection("Offices")
-        .onSnapshot((querySnapshot) => {
-            const list  = []
-            querySnapshot.forEach((doc) => {
-                var l = doc.data()
-                l.id = doc.id
-                list.push(l)
-            });
-            setData(list)
-            setConfirmLoading(false)
-        });
+        auth().onAuthStateChanged((user) => {
+            if (user) {
+                let ref = db.collection('User').doc(user.email)
+                ref.get()
+                .then( snapshot => {  //DocSnapshot
+                    if (snapshot.exists) {
+                        setUserCred(snapshot.data())
+                        db.collection("Offices")
+                        .onSnapshot((querySnapshot) => {
+                            const list  = []
+                            querySnapshot.forEach((doc) => {
+                                var l = doc.data()
+                                l.id = doc.id
+                                list.push(l)
+                            });
+                            setData(list)
+                            setConfirmLoading(false)
+                        });
+                    }
 
-        return () => {
-            unsubscribe()
-        }
+                })
+
+                
+            }
+        })
+
+        // return () => {
+        //     unsubscribe()
+        // }
     },[db])
 
 
@@ -97,17 +112,22 @@ export default function Offices() {
         key: 'operation',
         fixed: 'right',
         width: 100,
-        render: (record) => 
-        <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
+        render: (record) => {
+        if(['Super Admin','Admin'].includes(userCred?.role) && (!['Administrative and Management Records','Campus Director'].includes(record.id))){
+        return (<Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
             <Button  icon={<DeleteOutlined />} size={'middles'} />
-        </Popconfirm>,
+        </Popconfirm>)}
+        }
         
         },
     ];
     
     return (<CustomLayout>
         <CustomPageheader title={'Offices'} extra={[
-            <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={showModal}>Add</Button>
+            
+                userCred?.role !== 'Member' ? <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
+            
+            
         ]}>
             <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading}/>
         </CustomPageheader>

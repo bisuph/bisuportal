@@ -8,19 +8,17 @@ import CustomLayout from '../../component/customLayout';
 import { auth, db } from '../../services/firebase';
 import Highlighter from 'react-highlight-words';
 import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../services/fecthData';
+import { upperCase } from 'lodash';
 
-const ListOfMemo = dynamic(() => import('./listOfMemo'))
-const { Search } = Input;
 
 export default function Records({...props}) {
     const router = useRouter()
+    const { id } = router.query
     const [state, setState] = useState({
         initLoading: true,
         loading: false,
         list: [],
     })
-
-    const [cred, setCred] = useState(null)
 
 
     props.state = state
@@ -36,38 +34,15 @@ export default function Records({...props}) {
                 ref.get()
                 .then( snapshot => {  //DocSnapshot
                     if (snapshot.exists) {
+                        console.log(decodeURI(id))
                     const userCred = snapshot.data()
-                    setCred(userCred)
-                    
-                    if(userCred.role === 'Super Admin'){
-                        const data = getUploadedFiles()
+                        const data = getUploadedFilesPerAdmin(decodeURI(id))
                         data.then(docs => {
                             setState({
                                 initLoading: false,
                                 list: docs,
                             });
                         })
-                    }
-                    else{
-                        if(userCred.role === 'Admin'){
-                            const data = getUploadedFilesPerAdmin(userCred.campus)
-                            data.then(docs => {
-                                setState({
-                                    initLoading: false,
-                                    list: docs,
-                                });
-                            })
-                        }
-                        else{
-                            const data = getUploadedFilesPerUser(userCred.offices,userCred.campus)
-                            data.then(docs => {
-                                setState({
-                                    initLoading: false,
-                                    list: docs,
-                                });
-                            })
-                        }
-                    }
                     }
                 })
             }
@@ -194,14 +169,7 @@ export default function Records({...props}) {
       ];
     return (
         <CustomLayout >
-        <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} extra={[
-            cred?.role === 'Member' ?
-            <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={()=>router.push("/records/create")}>
-                Add
-            </Button>
-            :
-            <></>
-        ]}>
+        <CustomPageheader title={upperCase(decodeURI(id))} icon={<SnippetsOutlined />} >
                 <Table columns={columns} dataSource={state.list} />
         </CustomPageheader>
         </CustomLayout>

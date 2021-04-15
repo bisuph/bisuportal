@@ -65,61 +65,62 @@ export default function Memo() {
                                 campus : snapshot.data().campus,
                                 offices : snapshot.data().offices,
                             }
-
-                            db.collection('UploadedFiles').add(newData)
-                            .then((docRef) => {
-                                var upld = []
-                                fileList.forEach(async (file) => {
-                                    setUploading(!uploading)
-                                
-                                    const storageRef = await storage.ref();
-                                    const fileRef = await storageRef.child(file.name);
-                                    var task = fileRef.put(file);
-
-                                    task.on('state_change',
-                                        function progress(snapshot){
-                                            var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                                            setpercent(progress)
-                                        },
-                                        (error) => {
-                                            // Handle unsuccessful uploads
-                                        }, 
-                                        () => {
-                                        // Handle successful uploads on complete
-                                        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                                        task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
-                                            const newUpld = {
-                                                name : file.name,
-                                                url : downloadURL,
-                                                type : file.type,
-                                            }
-                                            upld.push(newUpld)
-
-                                            db.collection('UploadedFiles').doc(docRef.id).update({
-                                                files : upld
-                                            }).then(() => {
-                                                setUploading(false)
-                                                console.log("Document successfully updated!");
-                                            })
-                                            .catch((error) => {
-                                                setUploading(false)
-                                                // The document probably doesn't exist.
-                                                console.error("Error updating document: ", error);
-                                            });
-                                        });
-                                        }
-                                    )
+                            if(!_.isEmpty(newData)){
+                                db.collection('UploadedFiles').add(newData)
+                                .then((docRef) => {
+                                    var upld = []
+                                    fileList.forEach(async (file) => {
+                                        setUploading(!uploading)
                                     
-                                });
+                                        const storageRef = await storage.ref();
+                                        const fileRef = await storageRef.child(file.name);
+                                        var task = fileRef.put(file);
 
-                            
-                                console.log("Document written with ID: ", docRef.id);
-                                // reset()
-                            })
-                            .catch((error) => {
-                                setUploading(false)
-                                console.error("Error adding document: ", error);
-                            });
+                                        task.on('state_change',
+                                            function progress(snapshot){
+                                                var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                                                setpercent(progress)
+                                            },
+                                            (error) => {
+                                                // Handle unsuccessful uploads
+                                            }, 
+                                            () => {
+                                            // Handle successful uploads on complete
+                                            // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                                            task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
+                                                const newUpld = {
+                                                    name : file.name,
+                                                    url : downloadURL,
+                                                    type : file.type,
+                                                }
+                                                upld.push(newUpld)
+
+                                                db.collection('UploadedFiles').doc(docRef.id).update({
+                                                    files : upld
+                                                }).then(() => {
+                                                    setUploading(false)
+                                                    console.log("Document successfully updated!");
+                                                })
+                                                .catch((error) => {
+                                                    setUploading(false)
+                                                    // The document probably doesn't exist.
+                                                    console.error("Error updating document: ", error);
+                                                });
+                                            });
+                                            }
+                                        )
+                                        
+                                    });
+
+                                
+                                    console.log("Document written with ID: ", docRef.id);
+                                    // reset()
+                                })
+                                .catch((error) => {
+                                    setUploading(false)
+                                    console.error("Error adding document: ", error);
+                                });
+                            }
                         }
                     })
                 }
