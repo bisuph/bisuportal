@@ -30,15 +30,24 @@ export default function Dashboard() {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      
 
       <main className={styles.main} >
         <h1 className={styles.title}>
           Welcome to 
         </h1>
+
+        {
+          (profile?.role === 'Super Admin') &&
+          <>
+            <h4 className={styles.title}>
+              <a href="#">Bohol Island State University</a>
+            </h4>
+            <p className={styles.description}>
+              Super Admin
+            </p>
+          </>
+        }
         <h4 className={styles.title}>
           <a href="#">{profile?.campus}</a>
         </h4>

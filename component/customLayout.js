@@ -9,6 +9,7 @@ import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog, FaUser 
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db } from './../services/firebase';
+import Head from 'next/head';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -127,6 +128,9 @@ const CustomLayout = ({...props}) => {
 
     return(
         <>
+        <Head>
+          <title>Electronic Records Management System</title>
+        </Head>
         <Sider trigger={null} collapsible collapsed={state.collapsed} collapsedWidth={state.collapsedWidth} 
           breakpoint={"lg","md"}
           onBreakpoint={broken => {
