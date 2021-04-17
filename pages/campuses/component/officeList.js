@@ -56,23 +56,14 @@ export default function OfficeList ({...props}) {
     return(
         <>
             <List
-                grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 4,
-                lg: 4,
-                xl: 6,
-                xxl: 3,
-                }}
                 dataSource={data}
                 renderItem={item => (
                 <List.Item>
-                    <Card.Grid style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}} onClick={() => onModalOpen(item.id)}>
+                    <Card style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}} onClick={() => onModalOpen(item.id)}>
                         <Space >
                         <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
                         </Space>
-                    </Card.Grid>
+                    </Card>
                 </List.Item>
                 )}
             />

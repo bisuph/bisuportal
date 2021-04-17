@@ -22,17 +22,31 @@ export default function Records () {
                 ref.get()
                 .then( snapshot => {  //DocSnapshot
                     if (snapshot.exists) {
+                        const access = snapshot.data()
                         setUserCred(snapshot.data())
-                        db.collection("Offices")
-                        .onSnapshot((querySnapshot) => {
-                            const list  = []
-                            querySnapshot.forEach((doc) => {
-                                var l = doc.data()
-                                l.id = doc.id
-                                list.push(l)
+                        console.log(access)
+                        if(access.role === 'Admin'){
+                            db.collection("Offices")
+                            .onSnapshot((querySnapshot) => {
+                                const list  = []
+                                querySnapshot.forEach((doc) => {
+                                    var l = doc.data()
+                                    l.id = doc.id
+                                    list.push(l)
+                                });
+                                setData(list)
                             });
+                        }
+                        else {
+                            const list = []
+                            var l = {
+                                id : access.offices 
+                            }
+                            list.push(l)
                             setData(list)
-                        });
+
+                        }
+                        
                     }
 
                 })
@@ -50,24 +64,15 @@ export default function Records () {
         <CustomLayout >
             <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
             <List
-                grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 4,
-                lg: 4,
-                xl: 6,
-                xxl: 3,
-                }}
                 dataSource={data}
                 renderItem={item => (
                 <List.Item>
                     <Link href={"/records/"+item.id}>
-                    <Card.Grid style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}}>
+                    <Card style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}}>
                         <Space >
                         <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
                         </Space>
-                    </Card.Grid>
+                    </Card>
                     </Link>
                 </List.Item>
                 )}
