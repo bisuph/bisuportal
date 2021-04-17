@@ -1,9 +1,10 @@
-import { Form, Input, Button, Checkbox, Layout, Row, Col, Card, Typography, message } from 'antd';
+import { Form, Input, Button, Checkbox, Layout, Row, Col, Card, Typography, message, Space } from 'antd';
 import { auth } from '../../services/firebase';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
+const { Title } = Typography;
 const layout = {
   labelCol: {
     span: 8,
@@ -19,8 +20,6 @@ const tailLayout = {
   },
 };
 
-const { Content} = Layout;
-const { Title } = Typography;
 
 export default function Demo () {
   const [form] = Form.useForm();
@@ -69,12 +68,19 @@ export default function Demo () {
 
   return (
     <>
-    <Row justify="center">
-      <Col sm={16} md={6} lg={6} xl={6}>
-
+    <Row justify="center" style={{marginTop:100,}}>
+      
+      <Col sm={22} md={10} lg={10} xl={10}>
+        <Space direction='vertical' align='center' style={{width:'100%'}} wrap={true}>
+          <img src='https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' />
+          <Title style={{color:'#0567c1',marginBottom:0}} level={3} align='center'>Electronic Records Management System </Title>
+          <Title style={{color:'#0567c1',marginBottom:0}} level={3} align='center'>Of</Title> 
+          <Title style={{color:'#0567c1'}} level={3} align='center'>Bohol Island State University</Title>
+        </Space>
       </Col>
       <Col xs={22} sm={16} md={10 } lg={8} xl={6}>
-        <Card title="BISU Portal" style={{  marginTop:100, borderRadius:'8px', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)' }}>
+        
+        <Card title="Signin" style={{   borderRadius:'8px', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)' }}>
             <Form
                 form={form}
                 name="basic"
@@ -119,15 +125,13 @@ export default function Demo () {
                   <Button loading={loading} type="primary" htmlType="submit" className="login-form-button" style={{width:'100%',borderRadius:'6px',height:'48px'}} size={'large'}>
                     {!loading ? <Title level={4} strong={true} style={{color:'white'}}>Log In</Title> : ''}
                   </Button>
-                  Or <a href="/signup">register now!</a>
+                  Or <a href="/signup">Signup</a>
                 </Form.Item>
 
             </Form>
         </Card>
       </Col>
-      <Col sm={16} md={6} lg={6} xl={6}>
-
-      </Col>
+      
     </Row>
     </>
   );

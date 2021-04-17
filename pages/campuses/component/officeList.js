@@ -1,19 +1,20 @@
-import { Avatar, Card, List, Space } from 'antd';
-import CustomLayout from '../../component/customLayout';
-import CustomPageheader from '../../component/customPageheader';
+import { Avatar, Card, List, Modal, Space } from 'antd';
 import { PlusSquareOutlined, SnippetsOutlined, SolutionOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { auth, db } from '../../services/firebase';
+import { auth, db } from '../../../services/firebase';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import OfficeRecords from './officeRecords';
 
 const gridStyle = {
   width: '25%',
   textAlign: 'center',
 };
 
-export default function Records () {
+export default function OfficeList ({...props}) {
+    const {changePage} = props
     const [data,setData] = useState([])
     const [userCred,setUserCred] = useState(null)
+    const [visible, setVisible] = useState(false);
+    const [office, setOffices] = useState(null);
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -46,9 +47,14 @@ export default function Records () {
         // }
     },[db])
 
+    const onModalOpen = (value) => {
+        setVisible(true)
+        setOffices(value)
+    }
+
+
     return(
-        <CustomLayout >
-            <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
+        <>
             <List
                 grid={{
                 gutter: 16,
@@ -62,17 +68,26 @@ export default function Records () {
                 dataSource={data}
                 renderItem={item => (
                 <List.Item>
-                    <Link href={"/records/"+item.id}>
-                    <Card.Grid style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}}>
+                    <Card.Grid style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}} onClick={() => onModalOpen(item.id)}>
                         <Space >
                         <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
                         </Space>
                     </Card.Grid>
-                    </Link>
                 </List.Item>
                 )}
             />
-            </CustomPageheader>
-        </CustomLayout>
+
+            <Modal
+                title="Records"
+                centered
+                visible={visible}
+                okButtonProps={{ hidden: true }}
+                onCancel={() => setVisible(false)}
+                // cancelButtonProps={{ hidden: true }}
+                width={1000}
+            >
+                <OfficeRecords office={office} />
+            </Modal>
+        </>
     )
 }

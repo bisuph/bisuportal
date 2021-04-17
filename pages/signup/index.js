@@ -1,4 +1,4 @@
-import { Form, Input, notification, Button, Row, Col, Card } from 'antd';
+import { Form, Input, notification, Button, Row, Col, Card, message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../services/firebase';
@@ -61,6 +61,7 @@ const Signup = () => {
                         .catch((error) => {
                             var errorCode = error.code;
                             var errorMessage = error.message;
+                            message.error(errorMessage);
                             // ..
                         });
                     } else {
@@ -153,6 +154,7 @@ const Signup = () => {
                 <Button type="primary" htmlType="submit" style={{width:'100%',borderRadius:'6px'}} size={'large'}>
                     Submit
                 </Button>
+                Already have an account ? <a href="/signin">Signin</a>
                 </Form.Item>
             </Form>
             </Card>

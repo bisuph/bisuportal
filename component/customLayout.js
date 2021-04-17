@@ -5,7 +5,7 @@ import {
   CoffeeOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/router'
-import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog } from "react-icons/fa";
+import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog, FaUser } from "react-icons/fa";
 import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db } from './../services/firebase';
@@ -25,7 +25,7 @@ const menu = [
     title : "Records",
     route : "/records",
     icon :<FaClipboardList />,
-    access : ['Member']
+    access : ['Member','Admin']
 
   },
   {
@@ -89,7 +89,7 @@ const CustomLayout = ({...props}) => {
           ref.get()
           .then( snapshot => {  //DocSnapshot
               if (snapshot.exists) {
-                setCred(snapshot.data().role)
+                setCred(snapshot.data())
               }
           })
         } else {
@@ -137,12 +137,17 @@ const CustomLayout = ({...props}) => {
             <Avatar src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png" />
           </div>
           <Menu theme="dark" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
+            <Menu.Item icon={<FaUser />}>
+                {/* <Link href={'#'}> */}
+                    {cred?.email}
+                {/* </Link> */}
+            </Menu.Item>
             {
                 menu &&
                 (
                     menu.map((items,i)=>{
                         if(items?.access){
-                          if(items.access.includes(cred)){
+                          if(items.access.includes(cred?.role)){
                             return (
                               <Menu.Item key={items.key} icon={items.icon}>
                                   <Link href={items.route}>
@@ -184,14 +189,13 @@ const CustomLayout = ({...props}) => {
         <Layout className="site-layout">
           <Header className="site-layout-background" style={{ padding: '0px 0px 0px 20px' }}>
             <div className="logo" />
-              <Menu mode="horizontal" defaultSelectedKeys={['1']}>
+              <Menu mode="horizontal" defaultSelectedKeys={['1']} >
                   {(!state.changeHeader) && (
                       React.createElement(state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
                         className: 'trigger',
                         onClick: toggle,
                       })
                   )}
-                <Menu.Item key="1"><Title level={3}>BISU</Title></Menu.Item>
               </Menu>
           </Header>
           <Content

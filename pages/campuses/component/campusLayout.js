@@ -1,19 +1,24 @@
 import { Avatar, Card, List, Space } from 'antd';
-import CustomLayout from '../../component/customLayout';
-import CustomPageheader from '../../component/customPageheader';
 import { PlusSquareOutlined, SnippetsOutlined, SolutionOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import { auth, db } from '../../services/firebase';
+import { auth, db } from '../../../services/firebase';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import OfficeRecords from './officeRecords';
+import OfficeList from './officeList';
 
 const gridStyle = {
   width: '25%',
   textAlign: 'center',
 };
 
-export default function Records () {
+export default function CampusLayout ({...props}) {
+    const {changePage} = props
     const [data,setData] = useState([])
     const [userCred,setUserCred] = useState(null)
+    const router = useRouter()
+    const {campus} = router.query
+    const [page,setPage] = useState(<OfficeList />)
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -47,32 +52,8 @@ export default function Records () {
     },[db])
 
     return(
-        <CustomLayout >
-            <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
-            <List
-                grid={{
-                gutter: 16,
-                xs: 1,
-                sm: 2,
-                md: 4,
-                lg: 4,
-                xl: 6,
-                xxl: 3,
-                }}
-                dataSource={data}
-                renderItem={item => (
-                <List.Item>
-                    <Link href={"/records/"+item.id}>
-                    <Card.Grid style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}}>
-                        <Space >
-                        <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
-                        </Space>
-                    </Card.Grid>
-                    </Link>
-                </List.Item>
-                )}
-            />
-            </CustomPageheader>
-        </CustomLayout>
+    <>
+        {page}
+    </>
     )
 }

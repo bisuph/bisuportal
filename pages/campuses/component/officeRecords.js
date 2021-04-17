@@ -1,24 +1,31 @@
-import { PageHeader, Upload, Card, Tabs, Layout, Space, Button, Tag, Input, Divider, Table } from 'antd';
-import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined } from '@ant-design/icons';
+
+
+
+import { PageHeader, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Modal, Table } from 'antd';
+import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState} from 'react';
-import CustomPageheader from '../../component/customPageheader'
 import { useRouter } from 'next/router'
-import CustomLayout from '../../component/customLayout';
-import { auth, db } from '../../services/firebase';
 import Highlighter from 'react-highlight-words';
-import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../services/fecthData';
-import { upperCase } from 'lodash';
+import { getUploadedFilesPerUser } from '../../../services/fecthData';
+import { auth, db } from '../../../services/firebase';
+const { TabPane } = Tabs;
 
+const { Search } = Input;
 
-export default function Records({...props}) {
+export default function OfficeRecords({...props}) {
+    const [visible, setVisible] = useState(false);
     const router = useRouter()
-    const { id } = router.query
+    const {campus} = router.query
+    const { office } = props
     const [state, setState] = useState({
         initLoading: true,
         loading: false,
         list: [],
     })
+
+    const [cred, setCred] = useState(null)
+    const [defaultProps, setDefaultProps] = useState(null)
 
 
     props.state = state
@@ -26,6 +33,14 @@ export default function Records({...props}) {
     props.initLoading = state.initLoading
    
     useEffect(()=>{
+        refresh()
+    },[office])
+
+    function callback(key) {
+        refresh()
+    }
+
+    const refresh = () => {
         auth().onAuthStateChanged((user) => {
             if(user){
 
@@ -34,9 +49,10 @@ export default function Records({...props}) {
                 ref.get()
                 .then( snapshot => {  //DocSnapshot
                     if (snapshot.exists) {
-                        console.log(decodeURI(id))
-                    const userCred = snapshot.data()
-                        const data = getUploadedFilesPerAdmin(decodeURI(id))
+                        const userCred = snapshot.data()
+                        setCred(userCred)
+
+                        const data = getUploadedFilesPerUser(decodeURI(office),decodeURI(campus))
                         data.then(docs => {
                             setState({
                                 initLoading: false,
@@ -47,8 +63,7 @@ export default function Records({...props}) {
                 })
             }
         })
-    
-    },[db])
+    }
 
     const [search,setSearch] = useState({
     searchText: '',
@@ -113,6 +128,15 @@ export default function Records({...props}) {
     setSearch({ searchText: '' });
     };
     
+    const onPopConfirm = (record) => {
+        db.collection("UploadedFiles").doc(record.id).delete().then(() => {
+            console.log("Document successfully deleted!");
+            refresh()
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
+
     const columns = [
         {
           title: 'Description',
@@ -159,6 +183,20 @@ export default function Records({...props}) {
               </>
             ),
         },
+        {
+            title: 'Action',
+            key: 'operation',
+            fixed: 'right',
+            width: 100,
+            render: (record) => 
+            <Space>
+                <Button icon={<EditOutlined />} onClick={() => {setVisible(true),setDefaultProps(record)}} />
+                <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
+                    <Button  icon={<DeleteOutlined />} size={'middles'} />
+                </Popconfirm>
+            </Space>
+        
+        },
 
         // {
         //   title: 'Uploaded by',
@@ -167,13 +205,9 @@ export default function Records({...props}) {
         //   ...getColumnSearchProps('address'),
         // },
       ];
-    return (
-        <CustomLayout >
-        <CustomPageheader title={upperCase(decodeURI(id))} icon={<SnippetsOutlined />} >
-                <Table columns={columns} dataSource={state.list} />
-        </CustomPageheader>
-        </CustomLayout>
-    )
+    return (<>
+        <Table columns={columns} dataSource={state.list} />
+    </>)
 }
 
 
