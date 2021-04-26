@@ -1,5 +1,5 @@
 import { Card, Avatar, Popconfirm } from 'antd';
-import { EditOutlined, DeleteOutlined, EyeOutlined } from '@ant-design/icons';
+import { EditTwoTone, DeleteTwoTone, EyeTwoTone } from '@ant-design/icons';
 import { useState } from 'react';
 import { db } from './../services/firebase';
 import { useRouter } from 'next/router';
@@ -23,13 +23,13 @@ export default function UserCard  ({title,description,avatar,cover}) {
     return (
         <Card
             loading={confirmLoading}
-            style={{ width: '100%', height:'100%' }}
+            style={{ width: '100%', height:'100%', borderRadius:"max(0px, min(8px, ((100vw - 4px) - 100%) * 9999)) / 8px",boxShadow:'0 1px 2px rgba(0, 0, 0, 0.2)' }}
             cover={cover}
             actions={[
-            <EyeOutlined key="View" onClick={()=> router.push('/campuses/'+decodeURI(title))}/>,
-            <EditOutlined key="edit" />,
+            <EyeTwoTone twoToneColor={"#52c41a"} key="View" onClick={()=> router.push('/campuses/'+decodeURI(title))}/>,
+            <EditTwoTone key="edit" />,
             <Popconfirm title="Delete？" okText="Yes" cancelText="No" onConfirm={()=>onDelete(title)}>
-                <DeleteOutlined/>
+            <DeleteTwoTone twoToneColor={'#eb2f96'} />
             </Popconfirm>
             ]}
         >

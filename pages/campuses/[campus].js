@@ -14,12 +14,11 @@ const gridStyle = {
 };
 
 export default function Records ({...props}) {
-    const [data,setData] = useState([])
-    const [userCred,setUserCred] = useState(null)
-    
+    const router = useRouter()
+    const {campus} = router.query   
     return(
         <CustomLayout >
-            <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
+            <CustomPageheader title={decodeURI(campus)} icon={<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png"  />}>
             <CampusLayout />
             </CustomPageheader>
         </CustomLayout>

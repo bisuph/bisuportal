@@ -58,10 +58,10 @@ export default function OfficeList ({...props}) {
             <List
                 dataSource={data}
                 renderItem={item => (
-                <List.Item>
-                    <Card style={{boxShadow:'0 20px 30px -16px rgba(9,9,16,0.2)',width:'100%',cursor:'pointer',}} onClick={() => onModalOpen(item.id)}>
+                <List.Item style={{paddingBottom:'0px'}}>
+                    <Card onClick={() => onModalOpen(item.id)} style={{width:'100%',cursor:'pointer',borderRadius:"max(0px, min(8px, ((100vw - 4px) - 100%) * 9999)) / 8px",boxShadow:'0 1px 2px rgba(0, 0, 0, 0.2)'}}>
                         <Space >
-                        <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
+                        <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: "#52c41a" }} />{item.id}
                         </Space>
                     </Card>
                 </List.Item>

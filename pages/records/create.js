@@ -54,6 +54,52 @@ export default function CreateRecord({...props}) {
         }
     }
 
+    const processUpload = async (fileList,docRef) => {
+        var upld = []
+        await fileList.forEach(async (file) => {
+            setUploading(!uploading)
+        
+            const storageRef = await storage.ref();
+            const fileRef = await storageRef.child(file.name);
+            var task = fileRef.put(file);
+
+            task.on('state_change',
+                function progress(snapshot){
+                    var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    setpercent(progress)
+                },
+                (error) => {
+                    // Handle unsuccessful uploads
+                }, 
+                () => {
+                // Handle successful uploads on complete
+                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
+                    const newUpld = {
+                        name : file.name,
+                        url : downloadURL,
+                        type : file.type,
+                    }
+                    upld.push(newUpld)
+
+                    await db.collection('UploadedFiles').doc(docRef.id).update({
+                        files : upld
+                    }).then(() => {
+                        setUploading(false)
+                        console.log("Document successfully updated!");
+                    })
+                    .catch((error) => {
+                        setUploading(false)
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                    });
+                });
+                }
+            )
+            
+        });
+    }
+
     const handleUpload = async (values) => {
         if(!_.isEmpty(values?.description)){
             setbuttonDisable(true)
@@ -85,51 +131,12 @@ export default function CreateRecord({...props}) {
                                 if(!_.isEmpty(newData)){
                                     db.collection('UploadedFiles').add(newData)
                                     .then((docRef) => {
-                                        var upld = []
-                                        fileList.forEach(async (file) => {
-                                            setUploading(!uploading)
                                         
-                                            const storageRef = await storage.ref();
-                                            const fileRef = await storageRef.child(file.name);
-                                            var task = fileRef.put(file);
-
-                                            task.on('state_change',
-                                                function progress(snapshot){
-                                                    var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                                                    setpercent(progress)
-                                                },
-                                                (error) => {
-                                                    // Handle unsuccessful uploads
-                                                }, 
-                                                () => {
-                                                // Handle successful uploads on complete
-                                                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                                                task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
-                                                    const newUpld = {
-                                                        name : file.name,
-                                                        url : downloadURL,
-                                                        type : file.type,
-                                                    }
-                                                    upld.push(newUpld)
-
-                                                    db.collection('UploadedFiles').doc(docRef.id).update({
-                                                        files : upld
-                                                    }).then(() => {
-                                                        setUploading(false)
-                                                        console.log("Document successfully updated!");
-                                                    })
-                                                    .catch((error) => {
-                                                        setUploading(false)
-                                                        // The document probably doesn't exist.
-                                                        console.error("Error updating document: ", error);
-                                                    });
-                                                });
-                                                }
-                                            )
-                                            
-                                        });
-
-                                    
+                                        const process = processUpload(fileList,docRef)
+                                        process.then(function(result){
+                                            console.log('finish')
+                                            message.success('This is a success message');
+                                        })
                                         console.log("Document written with ID: ", docRef.id);
                                         // reset()
                                     })
