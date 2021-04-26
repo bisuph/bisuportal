@@ -2,15 +2,15 @@ import { PageHeader, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, 
 import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import dynamic from 'next/dynamic'
 import React, { useEffect, useState} from 'react';
-import CustomPageheader from '../../component/customPageheader'
+import CustomPageheader from '../../../component/customPageheader'
 import { useRouter } from 'next/router'
-import CustomLayout from '../../component/customLayout';
-import { auth, db } from '../../services/firebase';
+import CustomLayout from '../../../component/customLayout';
+import { auth, db } from '../../../services/firebase';
 import Highlighter from 'react-highlight-words';
-import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../services/fecthData';
+import { getUploadedFiles, getUploadedFilesPerUser, getUploadedFilesPerAdmin } from '../../../services/fecthData';
 const { TabPane } = Tabs;
 
-const Create = dynamic(() => import('./create'))
+// const Create = dynamic(() => import('../create'))
 const { Search } = Input;
 
 export default function Records({...props}) {
@@ -235,7 +235,7 @@ export default function Records({...props}) {
                     <Table columns={columns} dataSource={state.list} />
                 </TabPane>
                 <TabPane tab="Create Record" key="2">
-                    <Create />
+                    {/* <Create /> */}
                 </TabPane>
                
             </Tabs>
@@ -248,7 +248,7 @@ export default function Records({...props}) {
             cancelButtonProps={{ hidden: true }}
             width={1000}
             >
-            <Create default={defaultProps} onHide={setVisible}/>
+            {/* <Create default={defaultProps} onHide={setVisible}/> */}
             </Modal>
         </CustomPageheader>
         </CustomLayout>
