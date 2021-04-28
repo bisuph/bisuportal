@@ -1,10 +1,6 @@
 import { Form, Row, Col } from 'antd';
-import { useRouter } from 'next/router'
 import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
-import {
-    PlusSquareOutlined
-  } from '@ant-design/icons';
 import CustomLayout from '../../component/customLayout';
 import Modal from 'antd/lib/modal/Modal';
 import CreateUser from './component/createUser';
@@ -23,7 +19,7 @@ const colCard = {
     xxl:6
 }
 
-export default function Schools() {
+export default function Campuses() {
     const [state,setState] = useState(
         {
             id:'',
@@ -143,9 +139,6 @@ export default function Schools() {
         <Row gutter={[16, 16]} style={{marginBottom:10}}>
             <Col span={24}>
             <CustomPageheader title={'Campuses'} extra={[
-                // <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} >
-                //     Add
-                // </Button>
             ]}>
             </CustomPageheader>
             </Col>

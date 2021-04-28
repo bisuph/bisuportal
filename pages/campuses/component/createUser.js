@@ -70,7 +70,6 @@ const CreateUser = ({setState,state,handleOk,confirmLoading,handleCancel,form,..
         }
         else{
             const file = state.fileList[0]
-            console.log(state)
             const storageRef = await storage.ref();
             var desertRef = storageRef.child('logo/'+file.name);
 
@@ -104,13 +103,14 @@ const CreateUser = ({setState,state,handleOk,confirmLoading,handleCancel,form,..
     const handleChange = ({ fileList }) => {
         processUpload(fileList)
     };
-    const { previewVisible, previewImage, fileList, previewTitle } = state;
+
     const uploadButton = (
       <div>
         <PlusOutlined />
         <div style={{ marginTop: 8 }}>Upload Logo</div>
       </div>
     );
+
     return(
             <Form  form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 <Form.Item 
@@ -119,19 +119,19 @@ const CreateUser = ({setState,state,handleOk,confirmLoading,handleCancel,form,..
                     <>
                         <Upload
                         listType="picture-card"
-                        fileList={fileList}
+                        fileList={state?.fileList}
                         onPreview={handlePreview}
                         onChange={handleChange}
                         >
-                        {fileList?.length >= 1 ? null : uploadButton}
+                        {state?.fileList?.length >= 1 ? null : uploadButton}
                         </Upload>
                         <Modal
-                        visible={previewVisible}
-                        title={previewTitle}
+                        visible={state?.previewVisible}
+                        title={state?.previewTitle}
                         footer={null}
                         onCancel={handleUpCancel}
                         >
-                        <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                        <img alt="example" style={{ width: '100%' }} src={state?.previewImage} />
                         </Modal>
                     </>
                 </Form.Item>
