@@ -41,7 +41,7 @@ export default function Dashboard() {
           (profile?.role === 'Super Admin') &&
           <>
             <h4 className={styles.title}>
-              <a href="#">Bohol Island State University</a>
+              Bohol Island State University
             </h4>
             <p className={styles.description}>
               Super Admin
@@ -49,13 +49,10 @@ export default function Dashboard() {
           </>
         }
         <h4 className={styles.title}>
-          <a href="#">{profile?.campus}</a>
+          {profile?.campus}
         </h4>
 
-        <p className={styles.description}>
-          {profile?.offices}
-        </p>
-
+       
         <div className={styles.grid}>
           <img src={'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png'} />
         </div>

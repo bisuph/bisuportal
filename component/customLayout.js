@@ -2,11 +2,12 @@ import Link from 'next/link'
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  CoffeeOutlined
+  CoffeeOutlined,
+  BulbOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/router'
-import { FaChartBar, FaSignOutAlt, FaSchool, FaClipboardList, FaUserCog, FaUser } from "react-icons/fa";
-import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space } from 'antd';
+import { FaChartBar, FaSignOutAlt, FaKaaba, FaClipboardList, FaUserCog, FaUser } from "react-icons/fa";
+import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space, Button, Tag, Divider } from 'antd';
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db } from './../services/firebase';
 import Head from 'next/head';
@@ -33,7 +34,7 @@ const menu = [
     key : "/campuses",
     title : "Campuses",
     route : "/campuses",
-    icon :<FaSchool />,
+    icon :<FaKaaba />,
     access : ['Super Admin']
 
   },
@@ -131,7 +132,7 @@ const CustomLayout = ({...props}) => {
         <Head>
           <title>Electronic Records Management System</title>
         </Head>
-        <Sider trigger={null} collapsible collapsed={state.collapsed} collapsedWidth={state.collapsedWidth} 
+        <Sider trigger={null} collapsible collapsed={state.collapsed} collapsedWidth={state.collapsedWidth}  theme={'light'} width={260}
           breakpoint={"lg","md"}
           onBreakpoint={broken => {
             broken ? setState({...state,broken,collapsedWidth:0,collapsed:true,visibility:'collapse'}) : setState({...state,broken,collapsedWidth:80})
@@ -140,12 +141,13 @@ const CustomLayout = ({...props}) => {
           <div className={'title-header'} style={{marginBottom:15}}>
             <Avatar src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png" />
           </div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
+          <Menu theme="light" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
             <Menu.Item icon={<FaUser />}>
                 {/* <Link href={'#'}> */}
                     {cred?.email}
                 {/* </Link> */}
             </Menu.Item>
+            <Divider />
             {
                 menu &&
                 (
@@ -191,16 +193,25 @@ const CustomLayout = ({...props}) => {
             <p>Some contents...</p>
         </Drawer>
         <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: '0px 0px 0px 20px' }}>
+          <Header className="site-layout-background" style={{ padding: '0px 0px 0px 0px' }}>
             <div className="logo" />
-              <Menu mode="horizontal" defaultSelectedKeys={['1']} >
+              <Menu mode="horizontal" defaultSelectedKeys={['2']}  style={{background:'#1877f2',color:'white'}}>
+                <Menu.Item key="0"  disabled style={{color:'white!important'}}>
                   {(!state.changeHeader) && (
                       React.createElement(state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
                         className: 'trigger',
                         onClick: toggle,
                       })
                   )}
+                </Menu.Item>
+
+                <Menu.Item key="1" style={{float:'right',color:'white!important'}} disabled>
+                    <Button type="primary" icon={<BulbOutlined />} size={'large'}>
+                      Planing
+                    </Button>
+                </Menu.Item>
               </Menu>
+             
           </Header>
           <Content
             // className="site-layout-background"

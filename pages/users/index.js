@@ -250,7 +250,7 @@ export default function User() {
         <CustomPageheader title={'Users'} extra={[
             <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={showModal}>Add</Button>
         ]}>
-            <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading}/>
+            <Table bordered columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading} style={{boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}/>
         </CustomPageheader>
         <Modal
             title="Create User"

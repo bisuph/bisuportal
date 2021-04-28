@@ -1,4 +1,4 @@
-import { PageHeader, Row, Col, Card, Layout, Button } from 'antd';
+import { Form, Row, Col } from 'antd';
 import { useRouter } from 'next/router'
 import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
@@ -9,6 +9,8 @@ import CustomLayout from '../../component/customLayout';
 import Modal from 'antd/lib/modal/Modal';
 import CreateUser from './component/createUser';
 import { auth, db } from '../../services/firebase';
+import CustomPageheader from '../../component/customPageheader';
+import _ from 'lodash';
 const { v4: uuidv4 } = require('uuid');
   
 
@@ -22,8 +24,17 @@ const colCard = {
 }
 
 export default function Schools() {
-
-    const router = useRouter()
+    const [state,setState] = useState(
+        {
+            id:'',
+            previewVisible: false,
+            previewImage: '',
+            previewTitle: '',
+            fileList: [
+            ],
+          }
+    )
+    const [form] = Form.useForm()
     const [data,setData] = useState([])
     const [genKey, setGenKey] = useState(null)
     const [visible, setVisible] = useState(false);
@@ -32,7 +43,7 @@ export default function Schools() {
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
             if (user) {
-                db.collection('Campuses')
+                db.collection('campus')
                 .onSnapshot((querySnapshot) => {
                     const list  = []
                     querySnapshot.forEach((doc) => {
@@ -52,61 +63,91 @@ export default function Schools() {
     },[db])
 
 
-    const showModal = () => {
-        setGenKey(uuidv4())
+    const showModal = (item) => {
+
+        setState({...state,fileList:
+            item?.logo_name ?
+            [{
+                name : item?.logo_name,
+                url : item?.logo
+            }]
+            :
+            []
+        ,id:item?.id ? item?.id : ''})
+        form.setFieldsValue({ name: item?.name ? item?.name :'' , address : item?.address ? item?.address : '', logo :''});
         setVisible(true);
     };
 
     const handleOk = (values) => {
-        // setConfirmLoading(true);
+        
+        setConfirmLoading(true);
 
         auth().onAuthStateChanged((user) => {
             if (user) {
-                db.collection('Campuses').doc(values.name).set({
-                    address:values.address
-                })
-                .then(function() {
-                    setVisible(false);
-                })
-                .catch(function(error) {
-                    console.error("Error adding document: ", error);
-                    setVisible(false);
-                });
+                console.log(state)
+                var query = null
+                if(!_.isEmpty(state?.id)){
+                    query = db.collection('campus').doc(state?.id)
+                    return query.update({
+                        name:values.name,
+                        address:values.address,
+                        logo_name:state.fileList[0].name,
+                        logo:state.fileList[0].url,
+                    })
+                    .then(() => {
+                        setState({...state,fileList:[],id:''})
+                        setVisible(false);
+                        setConfirmLoading(false);
+                    })
+                    .catch((error) => {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                    });
+                }
+                else {
+                    query = db.collection('campus').doc()
+                    query.set({
+                        name:values.name,
+                        address:values.address,
+                        logo_name:state.fileList[0].name,
+                        logo:state.fileList[0].url,
+                    })
+                    .then(function() {
+                        setState({...state,fileList:[],id:''})
+                        setVisible(false);
+                        setConfirmLoading(false);
+                    })
+                    .catch(function(error) {
+                        console.error("Error adding document: ", error);
+                        setVisible(false);
+                    });
+
+                }
+
+                
             } else {
                 router.push("/signin")
             }
         })
 
-        setTimeout(() => {
-        
-        }, 2000);
     };
 
     const handleCancel = () => {
         console.log('Clicked cancel button');
         setVisible(false);
+        setState({...state,fileList:[],id:''})
     };
 
     return (
         <CustomLayout>
-        <Row gutter={[16, 16]}>
+        <Row gutter={[16, 16]} style={{marginBottom:10}}>
             <Col span={24}>
-            <PageHeader
-                style={{
-                    background:'white',
-                    marginBottom:10
-                }}
-                className="site-page-header"
-                onBack={() => window.history.back()}
-                title="Campuses"
-                subTitle="This is a subtitle"
-
-                extra={[
-                    <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={() => showModal()}>
-                        Add
-                    </Button>
-                ]}
-            />
+            <CustomPageheader title={'Campuses'} extra={[
+                // <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} >
+                //     Add
+                // </Button>
+            ]}>
+            </CustomPageheader>
             </Col>
         </Row>
         
@@ -116,23 +157,27 @@ export default function Schools() {
                 return(
                     <Col  {...colCard} key={i}>
                         <UserCard 
-                            title = {item.id}
-                            description = {item.address}
-                            avatar = {"https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png"}
+                            showModal={showModal}
+                            item={item}
                         />
                     </Col>
                 )
             })
         }
+            <Col  {...colCard}>
+                <UserCard 
+                    showModal={showModal}
+                />
+            </Col>
         </Row>
         <Modal
-            title="New Campus"
             visible={visible}
             confirmLoading={confirmLoading}
             okButtonProps={{ hidden: true }}
             cancelButtonProps={{ hidden: true }}
+            closable={false}
         >
-            <CreateUser handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
+            <CreateUser state={state} setState={setState} form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
         </Modal>
         </CustomLayout>
     )

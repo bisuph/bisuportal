@@ -16,9 +16,24 @@ const gridStyle = {
 export default function Records ({...props}) {
     const router = useRouter()
     const {campus} = router.query   
+    const [state,setState] = useState(null)
+    useEffect(()=>{
+        var docRef = db.collection("campus").doc(campus);
+        docRef.get().then((doc) => {
+            if (doc.exists) {
+                setState(doc.data())
+            } else {
+                // doc.data() will be undefined in this case
+                console.log("No such document!");
+            }
+        }).catch((error) => {
+            console.log("Error getting document:", error);
+        })
+    },[])
+
     return(
         <CustomLayout >
-            <CustomPageheader title={decodeURI(campus)} icon={<img src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png"  />}>
+            <CustomPageheader title={state?.name} icon={state?.logo}>
             <CampusLayout />
             </CustomPageheader>
         </CustomLayout>

@@ -25,22 +25,14 @@ const validateMessages = {
 /* eslint-enable no-template-curly-in-string */
 
 
-const { Option } = Select;
-const provinceData = ['Zhejiang', 'Jiangsu'];
-const cityData = {
-  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
-  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang'],
-};
-
-const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
-    const [form] = Form.useForm();
+const CreateUser = ({handleOk,confirmLoading,handleCancel,form,...props}) => {
    
     return(
-            <Form key={genKey} form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
+            <Form form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 
                 <Form.Item
                     name={'name'}
-                    label="Name"
+                    label="Office"
                     rules={[
                         {
                         required: true,
@@ -51,21 +43,17 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         icon: <InfoCircleOutlined />,
                     }}
                 >
-                <Input autoComplete={'off'} />
+                <Input size={'large'} autoComplete={'off'} />
                 </Form.Item>
 
-                <Form.Item wrapperCol={{ ...layouts.wrapperCol}}
-                    rules={[
-                        {
-                        required: true,
-                        },
-                    ]}>
-                <Space>
+                <Form.Item wrapperCol={{ ...layouts.wrapperCol}}>
                     
-                    <Button type="primary" htmlType="submit" loading={confirmLoading}>
+                <Space direction='vertical' style={{width:'100%'}}>
+                    
+                    <Button type="primary" htmlType="submit" loading={confirmLoading} style={{width:'100%'}}>
                         Submit
                     </Button>
-                    <Button onClick={handleCancel}>
+                    <Button onClick={handleCancel} style={{width:'100%'}}>
                         Cancel
                     </Button>
 
