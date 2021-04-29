@@ -34,6 +34,9 @@ export default function Demo () {
       if (user) {
         // router.push("/")
       } 
+      else{
+        router.push("/signin")
+      }
     })
   
     return () => {

@@ -10,20 +10,14 @@ const gridStyle = {
 };
 
 export default function OfficeList ({...props}) {
-    const {changePage} = props
     const [data,setData] = useState([])
-    const [userCred,setUserCred] = useState(null)
     const [visible, setVisible] = useState(false);
     const [office, setOffices] = useState(null);
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
             if (user) {
-                let ref = db.collection('User').doc(user.email)
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        setUserCred(snapshot.data())
+                
                         db.collection("Offices")
                         .onSnapshot((querySnapshot) => {
                             const list  = []
@@ -34,11 +28,6 @@ export default function OfficeList ({...props}) {
                             });
                             setData(list)
                         });
-                    }
-
-                })
-
-                
             }
         })
 

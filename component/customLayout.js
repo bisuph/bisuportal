@@ -11,6 +11,8 @@ import { Layout, Menu, Typography, Drawer, Affix, Avatar, Space, Button, Tag, Di
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db } from './../services/firebase';
 import Head from 'next/head';
+import { getUser } from '../services/fecthData';
+import { AccountContext } from '../context/AccountContext';
 
 const { Header, Sider, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -53,8 +55,8 @@ const menu = [
   },
 ]
 const CustomLayout = ({...props}) => {
+    const { account } = useContext(AccountContext)
     const router = useRouter()
-    const [cred, setCred] = useState("")
     const [routes, setRoutes] = useState("")
     const [state, setState] = useState({
         broken:false,
@@ -83,24 +85,9 @@ const CustomLayout = ({...props}) => {
         setState({...state,drawer:false});
     };
 
-    const checkAuth = () => {
-      auth().onAuthStateChanged((user) => {
-        if (user) {
-          let ref = db.collection('User').doc(user.email)
+    
 
-          ref.get()
-          .then( snapshot => {  //DocSnapshot
-              if (snapshot.exists) {
-                setCred(snapshot.data())
-              }
-          })
-        } else {
-          router.push("/signin")
-        }
-      })
-    }
     useEffect(()=>{
-      checkAuth()
       if(router){
         if(router.pathname.includes("/records")){
           setRoutes("/records")
@@ -144,7 +131,7 @@ const CustomLayout = ({...props}) => {
           <Menu theme="light" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
             <Menu.Item icon={<FaUser />}>
                 {/* <Link href={'#'}> */}
-                    {cred?.email}
+                    {account?.email}
                 {/* </Link> */}
             </Menu.Item>
             <Divider />
@@ -153,7 +140,7 @@ const CustomLayout = ({...props}) => {
                 (
                     menu.map((items,i)=>{
                         if(items?.access){
-                          if(items.access.includes(cred?.role)){
+                          if(items.access.includes(account?.role)){
                             return (
                               <Menu.Item key={items.key} icon={items.icon}>
                                   <Link href={items.route}>
@@ -207,7 +194,7 @@ const CustomLayout = ({...props}) => {
 
                 <Menu.Item key="1" style={{float:'right',color:'white!important'}} disabled>
                     <Button type="primary" icon={<BulbOutlined />} size={'large'}>
-                      Planing
+                      {account?.offices?.name ?? 'Super Admin'}
                     </Button>
                 </Menu.Item>
               </Menu>

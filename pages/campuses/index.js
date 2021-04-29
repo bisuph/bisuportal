@@ -3,7 +3,7 @@ import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
 import CustomLayout from '../../component/customLayout';
 import Modal from 'antd/lib/modal/Modal';
-import CreateUser from './component/createUser';
+import CreatCampus from './component/createCampus';
 import { auth, db } from '../../services/firebase';
 import CustomPageheader from '../../component/customPageheader';
 import _ from 'lodash';
@@ -32,7 +32,6 @@ export default function Campuses() {
     )
     const [form] = Form.useForm()
     const [data,setData] = useState([])
-    const [genKey, setGenKey] = useState(null)
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
 
@@ -80,7 +79,6 @@ export default function Campuses() {
 
         auth().onAuthStateChanged((user) => {
             if (user) {
-                console.log(state)
                 var query = null
                 if(!_.isEmpty(state?.id)){
                     query = db.collection('campus').doc(state?.id)
@@ -170,7 +168,7 @@ export default function Campuses() {
             cancelButtonProps={{ hidden: true }}
             closable={false}
         >
-            <CreateUser state={state} setState={setState} form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
+            <CreatCampus state={state} setState={setState} form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible}/>
         </Modal>
         </CustomLayout>
     )

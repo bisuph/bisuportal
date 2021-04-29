@@ -1,23 +1,24 @@
-import { Tabs, Row, Col, Space, Input, Popconfirm, Button , Table, Modal } from 'antd';
+import { Form, Row, Col, Space, Input, Popconfirm, Button , Table, Modal } from 'antd';
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 const { v4: uuidv4 } = require('uuid');
 import { db, auth } from '../../services/firebase';
-import _ from 'lodash'
+import _, { isString } from 'lodash'
 const CreateUser = dynamic(() => import('./component/createUser'))
 import CustomLayout from '../../component/customLayout';
-import Highlighter from 'react-highlight-words';
 
 import {
-    PlusSquareOutlined, DeleteOutlined, SearchOutlined
+    PlusSquareOutlined, DeleteOutlined, EditOutlined
 } from '@ant-design/icons';
-import { set } from 'nprogress';
+import { AccountContext } from '../../context/AccountContext';
 
     
 
 export default function User() {
+    const {account} = useContext(AccountContext)
+    const [form] = Form.useForm();
     const router = useRouter()
     const [genKey, setGenKey] = useState(null)
     const [visible, setVisible] = useState(false);
@@ -27,99 +28,120 @@ export default function User() {
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
             if(user){
-    
-                let ref = db.collection('User').doc(user.email)
-    
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        const userCred = snapshot.data()
-                        if(userCred.role === 'Super Admin')
-                        {
-                            db.collection("User")
-                            .onSnapshot((querySnapshot) => {
-                                const list  = []
-                                querySnapshot.forEach((doc) => {
-                                    list.push(doc.data())
-                                });
-                                setData(list)
-                                setConfirmLoading(false)
+                if(account?.role === 'Super Admin')
+                {
+                    db.collection("User").orderBy('email')
+                    .onSnapshot((querySnapshot) => {
+                        const list  = []
+                        querySnapshot.forEach((doc) => {
+                            var toPush = doc.data()
+                            toPush.id = doc.id
+                            list.push(toPush)
+                        });
+                        setData(list)
+                        setConfirmLoading(false)
+                    });
+                }
+                else{
+                    
+                    if(account?.role === 'Admin'){
+                        
+                        db.collection("User").where("campus", "==", account?.campus)
+                        .onSnapshot((querySnapshot) => {
+                            const list  = []
+                            querySnapshot.forEach((doc) => {
+                                var toPush = doc.data()
+                                toPush.id = doc.id
+                                list.push(toPush)
                             });
-                        }
-                        else{
-                            
-                            if(userCred.role === 'Admin'){
-                                
-                                db.collection("User").where("campus", "==", userCred.campus)
-                                .onSnapshot((querySnapshot) => {
-                                    const list  = []
-                                    querySnapshot.forEach((doc) => {
-                                        list.push(doc.data())
-                                    });
-                                    setData(list)
-                                    setConfirmLoading(false)
-                                });
-                            }
-                            else{
-                                router.push("/")
-
-                            }
-                        }
+                            setData(list)
+                            setConfirmLoading(false)
+                        });
                     }
-                })
+                    
+                }
+            }
+            else{
+                router.push("/")
+
             }
         })
 
         return () => {
         }
-    },[db])
+    },[account])
 
 
     const showModal = () => {
-        setGenKey(uuidv4())
+        setGenKey(null)
+        if(account?.role === 'Admin'){
+            form.setFieldsValue({ email: "" , offices:""});
+        }
+        else{
+            form.setFieldsValue({ email: "" , campus:"",offices:""});
+        }
         setVisible(true);
     };
+
+    function isJson(str) {
+        try {
+            JSON.parse(str);
+        } catch (e) {
+            return false;
+        }
+        return true;
+    }
 
     const handleOk = (values) => {
         // setConfirmLoading(true);
 
         auth().onAuthStateChanged((user) => {
             if (user) {
-                let ref = db.collection('User').doc(user.email)
+               
+                const newValues = _.clone(values)
+                newValues.school = account?.school
+                if(!isJson(newValues.offices)) 
+                {delete newValues.offices} else {newValues.offices = JSON.parse(newValues.offices)}
 
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        let userData = snapshot.data()
-                        
-                        const newValues = _.clone(values)
-                        newValues.school = userData.school
+                if(!isJson(newValues.campus))
+                {delete newValues.campus} else {newValues.campus = JSON.parse(newValues.campus)}
 
-                        if(newValues.offices == 'Administrative and Management Records'){
-                            newValues.role = 'Admin'
-                        }
-                        else {
-                            newValues.role = 'Member'
-                        }
+                if(account?.role === 'Admin'){
+                    newValues.campus = account?.campus
+                }
 
-                        db.collection('User').doc(newValues.email).set(newValues)
-                        .then(function() {
-                            setVisible(false);
-                        })
-                        .catch(function(error) {
-                            console.error("Error adding document: ", error);
-                            setVisible(false);
-                        });
+                if(newValues.offices !== undefined){
+                    if(newValues.offices.name == 'Administrative and management records'){
+                        newValues.role = 'Admin'
                     }
+                    else {
+                        newValues.role = 'Member'
+                    }
+                }
+
+                var query 
+                if(genKey !== null){
+                    query = db.collection('User').doc(genKey).update(newValues)
+                }
+                else
+                {
+                    query = db.collection('User').doc().set(newValues)
+                }
+                
+                query.then(function() {
+                    setVisible(false);
+                    setGenKey(null)
                 })
+                .catch(function(error) {
+                    console.error("Error adding document: ", error);
+                    setVisible(false);
+                });
+                        
+                        // console.log(newValues)
             } else {
                 router.push("/signin")
             }
         })
-
-        setTimeout(() => {
-        
-        }, 2000);
     };
 
     const handleCancel = () => {
@@ -129,7 +151,7 @@ export default function User() {
 
     const onPopConfirm = (record) => {
         setConfirmLoading(true)
-        db.collection("User").doc(record.email).delete().then(() => {
+        db.collection("User").doc(record.id).delete().then(() => {
             console.log("Document successfully deleted!");
             setConfirmLoading(false)
         }).catch((error) => {
@@ -137,68 +159,11 @@ export default function User() {
         });
     }
 
-    const [search,setSearch] = useState({
-    searchText: '',
-    searchedColumn: '',
-    })
-
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearch({
-        searchText: selectedKeys[0],
-        searchedColumn: dataIndex,
-    });
-    };
-
-    const getColumnSearchProps = dataIndex => ({
-
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-        <Input
-            placeholder={`Search ${dataIndex}`}
-            value={selectedKeys[0]}
-            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-            <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-            >
-            Search
-            </Button>
-            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-            </Button>
-        </Space>
-        </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-        record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '',
-    render: text =>
-        search.searchedColumn === dataIndex ? (
-        <Highlighter
-            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-            searchWords={[search.searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ''}
-        />
-        ) : (
-        text
-        ),
-    });
-
-    const handleReset = clearFilters => {
-    clearFilters();
-    setSearch({ searchText: '' });
-    };
+    const onEdit = (record) => {
+        setGenKey(record.id)
+        form.setFieldsValue({email:record?.email,campus:record?.campus?.name,offices:record?.offices?.name});
+        setVisible(true);
+    }
 
     const columns = [
         {
@@ -207,31 +172,32 @@ export default function User() {
             dataIndex: 'email',
             key: 'email',
             fixed: 'left',
-            ...getColumnSearchProps('email'),
         },
-        {
-            title: 'School',
-            dataIndex: 'school',
-            key: 'school',
-            ...getColumnSearchProps('school'),
-        },
+        // {
+        //     title: 'School',
+        //     dataIndex: 'school',
+        //     key: 'school',
+        // },
         {
             title: 'Campus',
             dataIndex: 'campus',
             key: 'campus',
-            ...getColumnSearchProps('campus'),
+            render : (record) => {
+                return record?.name
+            }
         },
         {
             title: 'Office',
             dataIndex: 'offices',
             key: 'offices',
-            ...getColumnSearchProps('offices'),
+            render : (record) => {
+                return record?.name
+            }
         },
         {
             title: 'Role',
             dataIndex: 'role',
             key: 'role',
-            ...getColumnSearchProps('role'),
         },
         {
         title: 'Action',
@@ -239,16 +205,22 @@ export default function User() {
         fixed: 'right',
         width: 100,
         render: (record) => 
-        <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
-            <Button  icon={<DeleteOutlined />} size={'middles'} />
-        </Popconfirm>,
+        ((record.role !== 'Super Admin')) ?
+        ((['Admin'].includes(account?.role)  && record?.role !== 'Admin' || (account.role == 'Super Admin')) && (<Space>
+            <Button type='primary' icon={<EditOutlined />} size={'middles'}  onClick={()=>onEdit(record)} />
+            <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
+                <Button type='primary' danger  icon={<DeleteOutlined />} size={'middles'} />
+            </Popconfirm>
+        </Space>))
+        :
+        <></>
         
         },
     ];
     
     return (<CustomLayout >
         <CustomPageheader title={'Users'} extra={[
-            <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={showModal}>Add</Button>
+            <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={()=>showModal()}>Add</Button>
         ]}>
             <Table bordered columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading} style={{boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}/>
         </CustomPageheader>
@@ -258,8 +230,9 @@ export default function User() {
             confirmLoading={confirmLoading}
             okButtonProps={{ hidden: true }}
             cancelButtonProps={{ hidden: true }}
+            closable={false}
         >
-            <CreateUser handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
+            <CreateUser form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
         </Modal>
     </CustomLayout>)
 }

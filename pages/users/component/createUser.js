@@ -1,9 +1,10 @@
 import { Form, Input, Select, Button, Row, Col, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { db, auth } from '../../../services/firebase';
 import { getCampuses, getOffices } from '../../../services/fecthData';
 import { useRouter } from 'next/router';
+import { AccountContext } from '../../../context/AccountContext';
 
 const layouts = {
     labelCol: {
@@ -29,18 +30,11 @@ const validateMessages = {
 
 
 const { Option } = Select;
-const provinceData = ['Zhejiang', 'Jiangsu'];
-const cityData = {
-  Zhejiang: ['Hangzhou', 'Ningbo', 'Wenzhou'],
-  Jiangsu: ['Nanjing', 'Suzhou', 'Zhenjiang'],
-};
 
-const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
-    const [form] = Form.useForm();
-   
+const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props}) => {
+    const {account} = useContext(AccountContext)
     const router =  useRouter()
     const [loading, setLoading] = useState(false);
-    const [userCred, setUserCred] = useState(null);
     const [campuses, setCampuses] = useState([])
     const [office, setOffice] = useState([])
     useEffect(() => {
@@ -48,40 +42,23 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
         setLoading(true)
         auth().onAuthStateChanged((user) => {
           if (user) {
-            
-            let ref = db.collection('User').doc(user.email)
-
-            ref.get()
-            .then( snapshot => {  //DocSnapshot
-                if (snapshot.exists) {
-                    setUserCred(snapshot.data())
-                    let userData = snapshot.data()
-                    form.setFieldsValue({ email: ''});
-
-                    if(userData.role === 'Super Admin'){
-
-                        var docRefCamp = getCampuses()
-                        docRefCamp.then(docsCamp => {
-                        console.log(docsCamp)
-
-                            setCampuses(docsCamp)
-                        })
-                    }
-                    else{
-                        form.setFieldsValue({ campus: userData.campus});
-                        form.setFieldsValue({ role: 'Member'});
-                    }
-                    
-
-                    var docRefOff = getOffices()
-                    docRefOff.then(docsOff => {
-                        setOffice(docsOff)
+           
+                if(account?.role === 'Super Admin'){
+                    var docRefCamp = getCampuses()
+                    docRefCamp.then(docsCamp => {
+                        setCampuses(docsCamp)
                     })
-                        
-                } else {
-                    console.log("No such document!");
-                }  
-            })
+                }
+                else{
+                    form.setFieldsValue({ campus: account?.campus?.name});
+                    form.setFieldsValue({ role: 'Member'});
+                }
+                
+
+                var docRefOff = getOffices()
+                docRefOff.then(docsOff => {
+                    setOffice(docsOff)
+                })
             
           } else {
             router.push("/signin")
@@ -95,7 +72,7 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
     },[genKey])
 
     return(
-            <Form key={genKey} form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
+            <Form form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 
                 <Form.Item
                     name={'email'}
@@ -111,23 +88,8 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         icon: <InfoCircleOutlined />,
                     }}
                 >
-                <Input autoComplete={'off'} />
+                <Input size='large' autoComplete={'off'} />
                 </Form.Item>
-
-                {/* <Form.Item name={'role'} label="Role" 
-                    rules={[
-                        {
-                        required: true,
-                        },
-                    ]}
-                >
-                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.role !== 'Super Admin' ? true : false}>
-                                <Option key={'Super Admin'}>{'Super Admin'}</Option>
-                                <Option key={'Admin'}>{'Admin'}</Option>
-                                <Option key={'Member'}>{'Member'}</Option>
-                        </Select>
-                    
-                </Form.Item> */}
 
                 <Form.Item name={'campus'} label="Campus" 
                     rules={[
@@ -136,9 +98,9 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         },
                     ]}
                 >
-                        <Select style={{ width: '100%' }}  loading={loading} disabled={userCred?.role !== 'Super Admin' ? true : false}>
+                        <Select size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
                             {campuses.map(campus => (
-                                <Option key={campus}>{campus}</Option>
+                                <Option key={JSON.stringify({name:campus.name,id:campus.id})}>{campus.name}</Option>
                             ))}
                         </Select>
                     
@@ -151,9 +113,9 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         },
                     ]}
                 >
-                    <Select style={{ width: '100%' }}  >
+                    <Select size='large' style={{ width: '100%' }}  >
                         {office.map(offices => (
-                        <Option key={offices}>{offices}</Option>
+                        <Option key={JSON.stringify({name:offices.name,id:offices.id})}>{offices.name}</Option>
                         ))}
                     </Select>
                 </Form.Item>
@@ -164,12 +126,12 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,genKey,...props}) => {
                         required: true,
                         },
                     ]}>
-                <Space>
+                <Space style={{width:'100%'}}  direction='vertical'>
                     
-                    <Button type="primary" htmlType="submit" loading={confirmLoading}>
+                    <Button type="primary" htmlType="submit" loading={confirmLoading} style={{width:'100%'}}>
                         Submit
                     </Button>
-                    <Button onClick={handleCancel}>
+                    <Button onClick={handleCancel} style={{width:'100%'}}>
                         Cancel
                     </Button>
 

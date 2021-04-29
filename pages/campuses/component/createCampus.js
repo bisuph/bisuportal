@@ -115,6 +115,7 @@ const CreateUser = ({setState,state,handleOk,confirmLoading,handleCancel,form,..
             <Form  form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 <Form.Item 
                     name={'logo'}
+                    label={'Logo'}
                 >
                     <>
                         <Upload

@@ -1,7 +1,7 @@
 import { Form, Popconfirm, Button , Table, Modal, Space } from 'antd';
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 const { v4: uuidv4 } = require('uuid');
 import { db, auth } from '../../services/firebase';
 import _ from 'lodash'
@@ -12,42 +12,34 @@ import {
     PlusCircleOutlined, DeleteOutlined , EditOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
+import { AccountContext } from '../../context/AccountContext';
 
     
 
 export default function Offices() {
+    const {account} = useContext(AccountContext)
     const [form] = Form.useForm();
     const [genKey, setGenKey] = useState(null)
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data,setData] = useState([])
-    const [userCred,setUserCred] = useState(null)
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
             if (user) {
-                let ref = db.collection('User').doc(user.email)
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        setUserCred(snapshot.data())
-                        db.collection("office").orderBy('name')
-                        .onSnapshot((querySnapshot) => {
-                            const list  = []
-                            querySnapshot.forEach((doc) => {
-                                var l = doc.data()
-                                l.id = doc.id
-                                l.created_date = doc.data().created_date.toDate()
-                                list.push(l)
-                            });
-                            setData(list)
-                            setConfirmLoading(false)
-                        });
-                    }
-
-                })
-
                 
+                db.collection("office").orderBy('name')
+                .onSnapshot((querySnapshot) => {
+                    const list  = []
+                    querySnapshot.forEach((doc) => {
+                        var l = doc.data()
+                        l.id = doc.id
+                        l.created_date = doc.data().created_date.toDate()
+                        list.push(l)
+                    });
+                    setData(list)
+                    setConfirmLoading(false)
+                });
             }
         })
 
@@ -71,7 +63,7 @@ export default function Offices() {
                 insert.created_date = new Date()
                 var query = null
                 if(!_.isEmpty(genKey)){
-                    query = db.collection('office').doc(genKey).set(insert)
+                    query = db.collection('office').doc(genKey).update(insert)
                 }
                 else{
                     query = db.collection('office').doc().set(insert)
@@ -147,7 +139,7 @@ export default function Offices() {
         fixed: 'right',
         width: 100,
         render: (record) => {
-        if(['Super Admin','Admin'].includes(userCred?.role) && (!['Administrative and Management Records','Campus Director'].includes(record.id))){
+        if(['Super Admin','Admin'].includes(account?.role) && (!['Administrative and Management Records','Campus Director'].includes(record.id))){
         return (
         <Space>
             <Button type='primary' icon={<EditOutlined />} size={'middles'}  onClick={()=>onEdit(record)} />
@@ -164,7 +156,7 @@ export default function Offices() {
     return (<CustomLayout>
         <CustomPageheader title={'Offices'} extra={[
             
-                userCred?.role !== 'Member' ? <Button type="primary" icon={<PlusCircleOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
+                account?.role !== 'Member' ? <Button type="primary" icon={<PlusCircleOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
             
             
         ]}>

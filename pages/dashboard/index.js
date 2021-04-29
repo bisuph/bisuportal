@@ -3,10 +3,12 @@ import styles from '../../styles/Home.module.css'
 import React, { useState, useEffect,useContext } from 'react';
 import {AccountContext} from '../../context/AccountContext'
 import { auth, db } from '../../services/firebase';
+import { useRouter } from 'next/router';
 
 
 
 export default function Dashboard() {
+  const router = useRouter()
   const accountContext = useContext(AccountContext)
   const [profile , setProfile] = useState(null)
   useEffect(()=>{
@@ -21,6 +23,9 @@ export default function Dashboard() {
                     setProfile(snapshot.data())
                   }
               })
+          }
+          else{
+            router.push("/signin")
           }
       })
 
