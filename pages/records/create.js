@@ -12,7 +12,6 @@ const { Option } = Select;
 
 export default function CreateRecord({...props}) {
     const {office} = props
-    console.log(office.data)
 
     const {account} = useContext(AccountContext)
     const [buttonDisable,setbuttonDisable] = useState(false)

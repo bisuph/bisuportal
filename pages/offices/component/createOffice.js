@@ -2,6 +2,8 @@ import { Form, Input, Select, Button, Row, Col, Space } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 
+const { Option } = Select;
+
 const layouts = {
     labelCol: {
         span: 8,
