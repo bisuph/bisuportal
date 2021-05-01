@@ -13,47 +13,13 @@ const gridStyle = {
 };
 
 export default function CampusLayout ({...props}) {
-    const {changePage} = props
     const [data,setData] = useState([])
     const [userCred,setUserCred] = useState(null)
     const router = useRouter()
     const {campus} = router.query
-    const [page,setPage] = useState(<OfficeList />)
 
-    useEffect(()=>{
-        auth().onAuthStateChanged((user) => {
-            if (user) {
-                let ref = db.collection('User').doc(user.email)
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        setUserCred(snapshot.data())
-                        db.collection("Offices")
-                        .onSnapshot((querySnapshot) => {
-                            const list  = []
-                            querySnapshot.forEach((doc) => {
-                                var l = doc.data()
-                                l.id = doc.id
-                                list.push(l)
-                            });
-                            setData(list)
-                        });
-                    }
-
-                })
-
-                
-            }
-        })
-
-        // return () => {
-        //     unsubscribe()
-        // }
-    },[db])
-
+    console.log(campus)
     return(
-    <>
-        {page}
-    </>
+       <OfficeList campus={campus}/>
     )
 }

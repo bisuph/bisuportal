@@ -1,4 +1,4 @@
-import { Form, Popconfirm, Button , Table, Modal, Space } from 'antd';
+import { Form, Popconfirm, Button , Table, Modal, Space, Tag } from 'antd';
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
 import React, { useContext, useEffect, useState } from 'react';
@@ -60,17 +60,19 @@ export default function Offices() {
             if (user) {
                 var insert = _.clone(values) 
                 insert.created_by = user.email
-                insert.created_date = new Date()
                 var query = null
                 if(!_.isEmpty(genKey)){
+                    insert.updated_date = new Date()
+                    insert.updated_by = user.email
                     query = db.collection('office').doc(genKey).update(insert)
                 }
                 else{
+                    insert.created_date = new Date()
                     query = db.collection('office').doc().set(insert)
                 }
 
                 query.then(function() {
-                    form.setFieldsValue({ name: '' });
+                    form.setFieldsValue({ name: '' ,role:''});
                     setVisible(false);
                 })
                 .catch(function(error) {
@@ -88,13 +90,13 @@ export default function Offices() {
     };
 
     const handleCancel = () => {
-        form.setFieldsValue({ name: '' });
+        form.setFieldsValue({ name: '', role:'' });
         setVisible(false);
     };
 
     const onEdit = (record) => {
         setGenKey(record.id)
-        form.setFieldsValue({ name: record.name });
+        form.setFieldsValue({ name: record.name, role: record.role });
         setVisible(true);
 
     }
@@ -119,18 +121,23 @@ export default function Offices() {
             fixed: 'left',
         },
         {
+            title: 'Role',
+            width: 250,
+            dataIndex: 'role',
+            render: (role) => 
+            (<Tag color={'blue'}>{role}</Tag>)
+        },
+        {
             title: 'Created By',
             width: 250,
             dataIndex: 'created_by',
-            key: 'created_by',
         },
         {
             title: 'Created Date',
             width: 250,
             dataIndex: 'created_date',
-            key: 'created_date',
-            render: (record) => {
-                return  moment(record.created_date).format('MMMM D, YYYY HH:mm:ss')
+            render: (created_date) => {
+                return  moment(created_date).format('MMMM D, YYYY HH:mm:ss')
             }
         },
         {
@@ -139,7 +146,7 @@ export default function Offices() {
         fixed: 'right',
         width: 100,
         render: (record) => {
-        if(['Super Admin','Admin'].includes(account?.role) && (!['Administrative and Management Records','Campus Director'].includes(record.id))){
+        if(['Super Admin'].includes(account?.role) && (!['Administrative and Management Records','Campus Director'].includes(record.id))){
         return (
         <Space>
             <Button type='primary' icon={<EditOutlined />} size={'middles'}  onClick={()=>onEdit(record)} />
@@ -156,7 +163,7 @@ export default function Offices() {
     return (<CustomLayout>
         <CustomPageheader title={'Offices'} extra={[
             
-                account?.role !== 'Member' ? <Button type="primary" icon={<PlusCircleOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
+            ['Super Admin'].includes(account?.role) ? <Button type="primary" icon={<PlusCircleOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
             
             
         ]}>

@@ -1,4 +1,4 @@
-import { Avatar, Card, List, Modal, Space } from 'antd';
+import { Avatar, Badge, Card, List, Modal, Space } from 'antd';
 import { PlusSquareOutlined, SnippetsOutlined, SolutionOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { auth, db } from '../../../services/firebase';
 import { useEffect, useState } from 'react';
@@ -18,7 +18,7 @@ export default function OfficeList ({...props}) {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 
-                        db.collection("Offices")
+                        db.collection("office")
                         .onSnapshot((querySnapshot) => {
                             const list  = []
                             querySnapshot.forEach((doc) => {
@@ -41,6 +41,8 @@ export default function OfficeList ({...props}) {
         setOffices(value)
     }
 
+    // console.log(data)
+    // console.log(props?.campus)
 
     return(
         <>
@@ -50,7 +52,10 @@ export default function OfficeList ({...props}) {
                 <List.Item style={{paddingBottom:'0px'}}>
                     <Card onClick={() => onModalOpen(item.id)} style={{width:'100%',cursor:'pointer',borderRadius:"max(0px, min(8px, ((100vw - 4px) - 100%) * 9999)) / 8px",boxShadow:'0 1px 2px rgba(0, 0, 0, 0.2)'}}>
                         <Space >
-                        <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: "#52c41a" }} />{item.id}
+                        <Badge count={item[props?.campus]}>
+                            <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#52c41a' }} />
+                        </Badge>
+                        {item.name}
                         </Space>
                     </Card>
                 </List.Item>

@@ -3,6 +3,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import React, { useState, useEffect } from 'react';
 import { auth, db } from '../../services/firebase';
 import { useRouter } from 'next/router';
+import { checkUserExist } from '../../services/fecthData';
 
 const layouts = {
     labelCol: {
@@ -31,6 +32,7 @@ const Signup = () => {
 
     useEffect(() => {
         auth().onAuthStateChanged((user) => {
+            console.log(user)
           if (user) {
             router.push("/")
           } 
@@ -47,10 +49,10 @@ const Signup = () => {
             if (user) {
               router.push("/");
             } else {
-                var docRef = db.collection("User").doc(values.email);
-
-                docRef.get().then((doc) => {
-                    if (doc.exists) {
+                checkUserExist(values.email)
+                .then(function(result){
+                    console.log(result)
+                    if(result.length > 0){
                         auth().createUserWithEmailAndPassword(values.email, values.password)
                         .then((userCredential) => {
                             // Signed in 
@@ -64,13 +66,33 @@ const Signup = () => {
                             message.error(errorMessage);
                             // ..
                         });
-                    } else {
-                        // doc.data() will be undefined in this case
+                    }
+                    else {
                         unAuthorize()
                     }
-                }).catch((error) => {
-                    console.log("Error getting document:", error);
-                });
+                })
+                // docRef.get().then((doc) => {
+                //     if (doc.exists) {
+                //         auth().createUserWithEmailAndPassword(values.email, values.password)
+                //         .then((userCredential) => {
+                //             // Signed in 
+                //             var user = userCredential.user;
+
+                //             // ...
+                //         })
+                //         .catch((error) => {
+                //             var errorCode = error.code;
+                //             var errorMessage = error.message;
+                //             message.error(errorMessage);
+                //             // ..
+                //         });
+                //     } else {
+                //         // doc.data() will be undefined in this case
+                //         unAuthorize()
+                //     }
+                // }).catch((error) => {
+                //     console.log("Error getting document:", error);
+                // });
 
                 
             }

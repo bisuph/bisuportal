@@ -1,9 +1,13 @@
 import Link from 'next/link'
 import {
+  BarChartOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  CoffeeOutlined,
-  BulbOutlined
+  ApartmentOutlined,
+  BulbOutlined,
+  FileDoneOutlined,
+  ClusterOutlined,
+  UserAddOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/router'
 import { FaChartBar, FaSignOutAlt, FaKaaba, FaClipboardList, FaUserCog, FaUser } from "react-icons/fa";
@@ -15,20 +19,19 @@ import { getUser } from '../services/fecthData';
 import { AccountContext } from '../context/AccountContext';
 
 const { Header, Sider, Content, Footer } = Layout;
-const { Title } = Typography;
 
 const menu = [
   {
     key : "/",
     title : "Dashboard",
     route : "/",
-    icon :<FaChartBar />
+    icon :<BarChartOutlined />
   },
   {
     key : "/records",
     title : "Records",
     route : "/records",
-    icon :<FaClipboardList />,
+    icon :<FileDoneOutlined />,
     access : ['Member','Admin']
 
   },
@@ -36,7 +39,7 @@ const menu = [
     key : "/campuses",
     title : "Campuses",
     route : "/campuses",
-    icon :<FaKaaba />,
+    icon :<ClusterOutlined />,
     access : ['Super Admin']
 
   },
@@ -44,18 +47,18 @@ const menu = [
     key : "/offices",
     title : "Offices",
     route : "/offices",
-    icon :<CoffeeOutlined />
+    icon :<ApartmentOutlined />
   },
   {
     key : "/users",
     title : "Users",
     route : "/users",
-    icon :<FaUserCog />,
+    icon :<UserAddOutlined />,
     access : ['Super Admin','Admin']
   },
 ]
 const CustomLayout = ({...props}) => {
-    const { account } = useContext(AccountContext)
+    const { account, setAccount } = useContext(AccountContext)
     const router = useRouter()
     const [routes, setRoutes] = useState("")
     const [state, setState] = useState({
@@ -86,6 +89,22 @@ const CustomLayout = ({...props}) => {
     };
 
     
+    const checkAuth = () => {
+      auth().onAuthStateChanged((user) => {
+        if (user) {
+          var docRefCamp = getUser(user.email)
+          docRefCamp.then(docsCamp => {
+            setAccount(docsCamp[0])
+          })
+        } else {
+          router.push("/signin")
+        }
+      })
+    }
+    
+    useEffect(()=>{
+      checkAuth()
+    },[])
 
     useEffect(()=>{
       if(router){
@@ -125,16 +144,21 @@ const CustomLayout = ({...props}) => {
             broken ? setState({...state,broken,collapsedWidth:0,collapsed:true,visibility:'collapse'}) : setState({...state,broken,collapsedWidth:80})
           }}
          >
-          <div className={'title-header'} style={{marginBottom:15}}>
-            <Avatar src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png" />
-          </div>
-          <Menu theme="light" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
-            <Menu.Item icon={<FaUser />}>
-                {/* <Link href={'#'}> */}
-                    {account?.email}
-                {/* </Link> */}
+          
+          <Menu theme="light" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]} style={{background: 'linear-gradient(110deg, #fdcd3b 60%, #ffed4b 60%)'}}>
+            <Menu.Item style={{height:!state.collapsed ? '180px' : 80}}>
+              <div className={'title-header'} style={{marginBottom:15}}>
+                <Avatar src="https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png" />
+              </div>
+              {(!state.collapsed)&&(
+              <Space direction='vertical' align='center' style={{width:'100%'}} visibility={false}>
+              {account?.email}
+              {account?.campus?.name}
+              </Space>)}
             </Menu.Item>
-            <Divider />
+          </Menu>
+          <Divider style={{marginTop:5}}/>
+          <Menu theme="light" mode="inline" defaultSelectedKeys={[routes]} selectedKeys={[routes]}>
             {
                 menu &&
                 (
@@ -182,7 +206,7 @@ const CustomLayout = ({...props}) => {
         <Layout className="site-layout">
           <Header className="site-layout-background" style={{ padding: '0px 0px 0px 0px' }}>
             <div className="logo" />
-              <Menu mode="horizontal" defaultSelectedKeys={['2']}  style={{background:'#1877f2',color:'white'}}>
+              <Menu mode="horizontal" defaultSelectedKeys={['2']}  style={{backgroundImage:'linear-gradient(to right,#2980B9, #6DD5FA,#FFFFFF)',color:'white',boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}>
                 <Menu.Item key="0"  disabled style={{color:'white!important'}}>
                   {(!state.changeHeader) && (
                       React.createElement(state.collapsed ? MenuUnfoldOutlined : MenuFoldOutlined, {
@@ -206,7 +230,7 @@ const CustomLayout = ({...props}) => {
               margin: '24px 16px',
               padding: 24,
               minHeight: 280,
-              
+              background: 'transparent!important'
             }}
           >
               {props.children}
@@ -214,6 +238,7 @@ const CustomLayout = ({...props}) => {
           {/* <Affix offsetBottom={10}>
             <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
           </Affix> */}
+        <Footer style={{ textAlign: 'center' }}>Electronic Records Management System  ©2021</Footer>
         </Layout>
         </>
     )

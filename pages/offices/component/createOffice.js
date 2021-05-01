@@ -45,6 +45,20 @@ const CreateUser = ({handleOk,confirmLoading,handleCancel,form,...props}) => {
                 >
                 <Input size={'large'} autoComplete={'off'} />
                 </Form.Item>
+                
+                <Form.Item name={'role'} label="Role" 
+                    rules={[
+                        {
+                        required: true,
+                        },
+                    ]}
+                >
+                        <Select size='large' style={{ width: '100%' }}  >
+                            {['Admin','Member'].map((value,i) => (
+                                <Option key={value}>{value}</Option>
+                            ))}
+                        </Select>
+                </Form.Item>
 
                 <Form.Item wrapperCol={{ ...layouts.wrapperCol}}>
                     

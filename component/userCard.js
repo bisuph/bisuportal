@@ -1,26 +1,31 @@
-import { Card, Avatar, Popconfirm, Button,Radio,Space } from 'antd';
+import { Card, Avatar, Popconfirm, Button,Radio,Space, message } from 'antd';
 import { EditTwoTone, DeleteTwoTone, EyeTwoTone , PlusCircleOutlined} from '@ant-design/icons';
 import { useState } from 'react';
 import { db } from './../services/firebase';
 import { useRouter } from 'next/router';
+import PasswordConfirm from '../pages/campuses/component/passwordConfirm';
 
 const { Meta } = Card;
 
 export default function UserCard  ({item,cover,showModal}) {
     const router = useRouter()
     const [confirmLoading, setConfirmLoading] = useState(false);
+    const [password,setPassword] = useState(null)
 
     const onDelete = (id) => {
-        setConfirmLoading(true)
+        setPassword(id)
+    }
+
+    const afterResult = (id) => {
         db.collection("campus").doc(id).delete().then(() => {
             console.log("Document successfully deleted!");
-            setConfirmLoading(false)
+            message.success('Successfully deleted.')
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
     }
-
     return (
+        <>
         <Card
             loading={confirmLoading}
             style={{ width: '100%', height:'100%', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}
@@ -28,11 +33,11 @@ export default function UserCard  ({item,cover,showModal}) {
             actions={
                 item?.name ? 
                 [<Space size={[8, 16]} wrap>
-                    <Button size='middle' type='dashed' onClick={()=> router.push('/campuses/'+decodeURI(item?.id))}><EyeTwoTone twoToneColor={"#52c41a"} key="View" /></Button>
-                    <Button size='middle' type='dashed' onClick={()=> showModal(item)}><EditTwoTone key="edit" /></Button>
+                    <Button size='middle' type='dashed' onClick={()=> router.push('/campuses/'+decodeURI(item?.id))}><EyeTwoTone twoToneColor={"#52c41a"} key="View" /> View</Button>
+                    <Button size='middle' type='dashed' onClick={()=> showModal(item)}><EditTwoTone key="edit" /> Edit</Button>
                     <Popconfirm title="Delete？" okText="Yes" cancelText="No" onConfirm={()=>onDelete(item?.id)}>
                     <Button size='middle' type='dashed' >
-                        <DeleteTwoTone twoToneColor={'#eb2f96'} />
+                        <DeleteTwoTone twoToneColor={'#eb2f96'} /> Delete
                     </Button>
                     </Popconfirm>
                 </Space>]
@@ -54,5 +59,7 @@ export default function UserCard  ({item,cover,showModal}) {
                 </Space>
             }
         </Card>
+        {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
+        </>
     )
 }

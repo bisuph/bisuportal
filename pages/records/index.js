@@ -1,10 +1,12 @@
-import { Avatar, Card, List, Space } from 'antd';
+import { Avatar, Badge, Card, List, Space } from 'antd';
 import CustomLayout from '../../component/customLayout';
 import CustomPageheader from '../../component/customPageheader';
 import { PlusSquareOutlined, SnippetsOutlined, SolutionOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { auth, db } from '../../services/firebase';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { AccountContext } from '../../context/AccountContext';
+import { getOfficesById } from '../../services/fecthData';
 
 const gridStyle = {
   width: '25%',
@@ -12,65 +14,60 @@ const gridStyle = {
 };
 
 export default function Records () {
+    const {account} = useContext(AccountContext)
     const [data,setData] = useState([])
-    const [userCred,setUserCred] = useState(null)
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
             if (user) {
-                let ref = db.collection('User').doc(user.email)
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                        const access = snapshot.data()
-                        setUserCred(snapshot.data())
-                        console.log(access)
-                        if(access.role === 'Admin'){
-                            db.collection("Offices")
-                            .onSnapshot((querySnapshot) => {
-                                const list  = []
-                                querySnapshot.forEach((doc) => {
-                                    var l = doc.data()
-                                    l.id = doc.id
-                                    list.push(l)
-                                });
-                                setData(list)
-                            });
-                        }
-                        else {
-                            const list = []
-                            var l = {
-                                id : access.offices 
-                            }
-                            list.push(l)
-                            setData(list)
-
-                        }
-                        
-                    }
-
-                })
-
                 
+                if(account?.role === 'Admin'){
+                    db.collection("office")
+                    .onSnapshot((querySnapshot) => {
+                        const list  = []
+                        querySnapshot.forEach((doc) => {
+                            const pushed = doc.data()
+                            pushed.id = doc.id
+                            list.push(pushed)
+                            
+                        });
+                        setData(list)
+                    });
+                }
+                else {
+                    
+                    const existing = getOfficesById(account?.offices?.id)
+                    existing.then(function(result){
+                        if(result){
+                            setData([result])
+                        }
+                    })
+                    
+                    // setData(list)
+
+                }
             }
         })
 
         // return () => {
         //     unsubscribe()
         // }
-    },[db])
+    },[account])
 
     return(
         <CustomLayout >
-            <CustomPageheader title={'Records'} icon={<SnippetsOutlined />} >
+            <CustomPageheader title={'Records'} icon={"https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png"} >
             <List
                 dataSource={data}
                 renderItem={item => (
-                <List.Item>
+                <List.Item style={{paddingBottom:'0px'}}>
                     <Link href={"/records/"+item.id}>
-                    <Card style={{width:'100%',cursor:'pointer',borderRadius:"max(0px, min(8px, ((100vw - 4px) - 100%) * 9999)) / 8px",boxShadow:'0 1px 2px rgba(0, 0, 0, 0.2)'}}>
+                    <Card style={{width:'100%',cursor:'pointer',boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}>
                         <Space >
-                        <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />{item.id}
+                        <Badge count={item[account?.campus?.id]}>
+                            <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />
+                        </Badge>
+                        {item.name}
                         </Space>
                     </Card>
                     </Link>

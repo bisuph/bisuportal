@@ -115,7 +115,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 >
                     <Select size='large' style={{ width: '100%' }}  >
                         {office.map(offices => (
-                        <Option key={JSON.stringify({name:offices.name,id:offices.id})}>{offices.name}</Option>
+                        <Option key={JSON.stringify({name:offices.name,id:offices.id,role:offices.role})}>{offices.name}</Option>
                         ))}
                     </Select>
                 </Form.Item>

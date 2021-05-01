@@ -1,4 +1,4 @@
-import { Form, Row, Col, Space, Input, Popconfirm, Button , Table, Modal } from 'antd';
+import { Form, Row, Col, Space, Input, Popconfirm, Button , Table, Modal, message, Tag, Card } from 'antd';
 import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
@@ -13,6 +13,7 @@ import {
     PlusSquareOutlined, DeleteOutlined, EditOutlined
 } from '@ant-design/icons';
 import { AccountContext } from '../../context/AccountContext';
+import { checkUserExist } from '../../services/fecthData';
 
     
 
@@ -24,6 +25,7 @@ export default function User() {
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data,setData] = useState([])
+    const [record,setRecord] = useState([])
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -39,6 +41,7 @@ export default function User() {
                             list.push(toPush)
                         });
                         setData(list)
+                        setRecord(list)
                         setConfirmLoading(false)
                     });
                 }
@@ -55,6 +58,7 @@ export default function User() {
                                 list.push(toPush)
                             });
                             setData(list)
+                            setRecord(list)
                             setConfirmLoading(false)
                         });
                     }
@@ -94,54 +98,82 @@ export default function User() {
 
     const handleOk = (values) => {
         // setConfirmLoading(true);
-
-        auth().onAuthStateChanged((user) => {
-            if (user) {
-               
-                const newValues = _.clone(values)
-                newValues.school = account?.school
-                if(!isJson(newValues.offices)) 
-                {delete newValues.offices} else {newValues.offices = JSON.parse(newValues.offices)}
-
-                if(!isJson(newValues.campus))
-                {delete newValues.campus} else {newValues.campus = JSON.parse(newValues.campus)}
-
-                if(account?.role === 'Admin'){
-                    newValues.campus = account?.campus
-                }
-
-                if(newValues.offices !== undefined){
-                    if(newValues.offices.name == 'Administrative and management records'){
-                        newValues.role = 'Admin'
-                    }
-                    else {
-                        newValues.role = 'Member'
-                    }
-                }
-
-                var query 
-                if(genKey !== null){
-                    query = db.collection('User').doc(genKey).update(newValues)
-                }
-                else
-                {
-                    query = db.collection('User').doc().set(newValues)
-                }
+        if(!_.isEmpty(values?.email)){
+            auth().onAuthStateChanged((user) => {
+                if (user) {
                 
-                query.then(function() {
-                    setVisible(false);
-                    setGenKey(null)
-                })
-                .catch(function(error) {
-                    console.error("Error adding document: ", error);
-                    setVisible(false);
-                });
+                    const newValues = _.clone(values)
+                    newValues.school = account?.school
+                    if(genKey !== null){
+                        if(!isJson(newValues.offices)) 
+                        {delete newValues.offices} else {newValues.offices = JSON.parse(newValues.offices);}
+
+                        if(!isJson(newValues.campus))
+                        {delete newValues.campus} else {newValues.campus = JSON.parse(newValues.campus)}
+
+                        if(account?.role === 'Admin'){
+                            newValues.campus = account?.campus
+                        }
+
+                        if(newValues.offices !== undefined){
+                            newValues.role = newValues.offices.role
+                        }
+
+                        var query = db.collection('User').doc(genKey).update(newValues) 
                         
-                        // console.log(newValues)
-            } else {
-                router.push("/signin")
-            }
-        })
+                        query.then(function() {
+                            setVisible(false);
+                            setGenKey(null)
+                        })
+                        .catch(function(error) {
+                            console.error("Error adding document: ", error);
+                            setVisible(false);
+                        });
+                    }
+                    else{
+
+                        checkUserExist(newValues?.email)
+                        .then(function(data){
+                            console.log(data.length)
+                            if(data.length === 0){
+                                if(!isJson(newValues.offices)) 
+                                {delete newValues.offices} else {newValues.offices = JSON.parse(newValues.offices);}
+
+                                if(!isJson(newValues.campus))
+                                {delete newValues.campus} else {newValues.campus = JSON.parse(newValues.campus)}
+
+                                if(account?.role === 'Admin'){
+                                    newValues.campus = account?.campus
+                                }
+
+                                if(newValues.offices !== undefined){
+                                    newValues.role = newValues.offices.role
+                                }
+
+                                var query = db.collection('User').doc().set(newValues) 
+                                
+                                query.then(function() {
+                                    setVisible(false);
+                                    setGenKey(null)
+                                })
+                                .catch(function(error) {
+                                    console.error("Error adding document: ", error);
+                                    setVisible(false);
+                                });
+                            }
+                            else{
+                                message.error('Email already exists.')
+                            }
+                        })
+                    }
+                    
+                            
+                            // console.log(newValues)
+                } else {
+                    router.push("/signin")
+                }
+            })
+        }
     };
 
     const handleCancel = () => {
@@ -165,6 +197,30 @@ export default function User() {
         setVisible(true);
     }
 
+
+
+    function filterText (obj,value) {
+        const result = Object.values(obj).filter(obj2 => {
+            const source = String(obj2).toUpperCase()
+            const compared = String(value).toUpperCase()
+            return source.includes(compared)
+        })
+
+        if(!_.isEmpty(result)){
+            return true
+        }
+
+    }
+
+    const f_SearchData = async (e) => {
+        const res = await _.clone(record).filter(obj => {
+            return filterText(obj,e.target.value)
+        });
+        setData(res)
+
+    }
+
+
     const columns = [
         {
             title: 'Email',
@@ -173,11 +229,6 @@ export default function User() {
             key: 'email',
             fixed: 'left',
         },
-        // {
-        //     title: 'School',
-        //     dataIndex: 'school',
-        //     key: 'school',
-        // },
         {
             title: 'Campus',
             dataIndex: 'campus',
@@ -198,6 +249,8 @@ export default function User() {
             title: 'Role',
             dataIndex: 'role',
             key: 'role',
+            render: (role) => 
+            (<Tag color={'blue'}>{role}</Tag>)
         },
         {
         title: 'Action',
@@ -222,7 +275,15 @@ export default function User() {
         <CustomPageheader title={'Users'} extra={[
             <Button type="primary" icon={<PlusSquareOutlined />} size={"middle"} onClick={()=>showModal()}>Add</Button>
         ]}>
-            <Table bordered columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading} style={{boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}/>
+             <Space direction={'vertical'} style={{width:'100%'}}>
+                <Card >
+                    <Space direction='horizontal' style={{width:'100%'}}>
+                    Search email : 
+                    <Input size='large' onChange={f_SearchData} style={{width:'100%'}}/>
+                    </Space>
+                </Card>
+                <Table bordered columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading} style={{boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}/>
+            </Space>
         </CustomPageheader>
         <Modal
             title="Create User"

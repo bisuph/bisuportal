@@ -1,160 +1,100 @@
-import { PageHeader, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Modal, Table } from 'antd';
-import { PlusSquareOutlined, SnippetsOutlined, SearchOutlined, PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
-import dynamic from 'next/dynamic'
-import React, { useEffect, useState} from 'react';
+import { Form, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Table, Select } from 'antd';
+import { PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import React, { useContext, useEffect, useState} from 'react';
 import { useRouter } from 'next/router'
 import { auth, db } from '../../services/firebase';
-import Highlighter from 'react-highlight-words';
-import { getUploadedFilesPerUser } from '../../services/fecthData';
-const { TabPane } = Tabs;
+import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser } from '../../services/fecthData';
+import { AccountContext } from '../../context/AccountContext';
+import { filter } from 'lodash';
+import UpdateRecord from './updateRecord';
 
-// const Create = dynamic(() => import('../create'))
 const { Search } = Input;
 
 export default function RecordsList({...props}) {
+    const {account} = useContext(AccountContext)
     const [visible, setVisible] = useState(false);
     const router = useRouter()
-    const { office } = router.query
-
+    const {office} = router.query
+    const [record,setRecord] = useState([])
+    const [selected,setSelected] = useState(null)
     const [state, setState] = useState({
         initLoading: true,
         loading: false,
         list: [],
+        
     })
 
-    const [cred, setCred] = useState(null)
-    const [defaultProps, setDefaultProps] = useState(null)
-
-
-    props.state = state
-    props.list = state.list
-    props.initLoading = state.initLoading
    
     useEffect(()=>{
         refresh()
-    },[])
-
-    function callback(key) {
-        refresh()
-    }
+    },[account,visible])
 
     const refresh = () => {
         auth().onAuthStateChanged((user) => {
             if(user){
+                var docRef = db.collection("office").doc(office);
+                docRef.get().then((doc) => {
+                    if (doc.exists) {
 
-                let ref = db.collection('User').doc(user.email)
-
-                ref.get()
-                .then( snapshot => {  //DocSnapshot
-                    if (snapshot.exists) {
-                    const userCred = snapshot.data()
-                    setCred(userCred)
-                    console.log(decodeURI(office))
-                    if(userCred.role === 'Super Admin'){
-                        const data = getUploadedFilesPerUser(decodeURI(office),userCred.campus)
+                        const data = getUploadedFilesPerUser(doc.id,account?.campus?.id)
+                        // const data = getUploadedFilesPerAdmin(account?.campus.id)
                         data.then(docs => {
                             setState({
                                 initLoading: false,
                                 list: docs,
                             });
+                            setRecord(docs)
+
                         })
+
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
                     }
-                    else{
-                        if(userCred.role === 'Admin'){
-                            const data = getUploadedFilesPerUser(decodeURI(office),userCred.campus)
-                            data.then(docs => {
-                                setState({
-                                    initLoading: false,
-                                    list: docs,
-                                });
-                            })
-                        }
-                        else{
-                            const data = getUploadedFilesPerUser(decodeURI(office),userCred.campus)
-                            data.then(docs => {
-                                setState({
-                                    initLoading: false,
-                                    list: docs,
-                                });
-                            })
-                        }
-                    }
-                    }
+                }).catch((error) => {
+                    console.log("Error getting document:", error);
                 })
+
+                
             }
         })
     }
 
-    const [search,setSearch] = useState({
-    searchText: '',
-    searchedColumn: '',
-    })
-
-    const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearch({
-        searchText: selectedKeys[0],
-        searchedColumn: dataIndex,
-    });
-    };
-
-    const getColumnSearchProps = dataIndex => ({
-
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-        <div style={{ padding: 8 }}>
-        <Input
-            placeholder={`Search ${dataIndex}`}
-            value={selectedKeys[0]}
-            onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-            <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-            >
-            Search
-            </Button>
-            <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-            </Button>
-        </Space>
-        </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-    onFilter: (value, record) =>
-        record[dataIndex]
-        ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase())
-        : '',
-    render: text =>
-        search.searchedColumn === dataIndex ? (
-        <Highlighter
-            highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-            searchWords={[search.searchText]}
-            autoEscape
-            textToHighlight={text ? text.toString() : ''}
-        />
-        ) : (
-        text
-        ),
-    });
-
-    const handleReset = clearFilters => {
-    clearFilters();
-    setSearch({ searchText: '' });
-    };
-    
     const onPopConfirm = (record) => {
-        db.collection("UploadedFiles").doc(record.id).delete().then(() => {
+        db.collection("uploaded").doc(record.id).delete().then(() => {
+            decrementFilesCount(office,account?.campus?.id)
             console.log("Document successfully deleted!");
             refresh()
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
+    }
+
+
+    function filterText (obj,value) {
+        const result = Object.values(obj).filter(obj2 => {
+            const source = String(obj2).toUpperCase()
+            const compared = String(value).toUpperCase()
+            return source.includes(compared)
+        })
+
+        if(!_.isEmpty(result)){
+            return true
+        }
+
+    }
+
+    const onEditButton = (value) => {
+        setSelected(value)
+        setVisible(true)
+    }
+
+    const f_SearchData = async (e) => {
+        const res = await _.clone(record).filter(obj => {
+            return filterText(obj,e.target.value)
+        });
+        setState({...state,list:res})
+
     }
 
     const columns = [
@@ -169,16 +109,22 @@ export default function RecordsList({...props}) {
           dataIndex: 'campus',
           key: 'campus',
           width: '20%',
+          render: campus => (
+              campus.name
+          )
         },
         {
-            title: 'Office',
-            dataIndex: 'offices',
-            key: 'offices',
+            title: 'Record',
+            dataIndex: 'record',
+            key: 'office',
             width: '20%',
+            render: office => (
+                office.name
+            )
         },
         {
             title: 'Uploaded by',
-            dataIndex: 'uploader',
+            dataIndex: 'uploadedBy',
             key: 'uploader',
             width: '20%',
         },
@@ -205,29 +151,33 @@ export default function RecordsList({...props}) {
             fixed: 'right',
             width: 100,
             render: (record) => 
-            <Space>
-                <Button type="primary"  icon={<EditOutlined />} onClick={() => {setVisible(true),setDefaultProps(record)}} />
-                <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
-                    <Button type="primary"  danger  icon={<DeleteOutlined />} size={'middles'} />
-                </Popconfirm>
-            </Space>
+                ((record.uploadedBy === account?.email)&&(
+                    <Space>
+                        <Button type="primary"  icon={<EditOutlined />} onClick={() => onEditButton(record)} />
+                        <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
+                            <Button type="primary"  danger  icon={<DeleteOutlined />} size={'middles'} />
+                        </Popconfirm>
+                    </Space>
+                ))
         
         },
-
-        // {
-        //   title: 'Uploaded by',
-        //   dataIndex: 'address',
-        //   key: 'address',
-        //   ...getColumnSearchProps('address'),
-        // },
+       
       ];
     return (
-                    <Table 
-                        columns={columns} 
-                        dataSource={state.list}
-                        bordered
-                        title={() => 'Records'}
-                    />
+        <Space direction={'vertical'} style={{width:'100%'}}>
+            <Card >
+                <Space direction='horizontal' style={{width:'100%'}}>
+                Search description : 
+                <Input size='large' onChange={f_SearchData} style={{width:'100%'}}/>
+                </Space>
+            </Card>
+            <Table 
+                columns={columns} 
+                dataSource={state.list}
+                bordered
+            />
+            <UpdateRecord mirror={visible} setMirror={setVisible} toUpdate={selected} office={office}/>
+        </Space>
                     // <Modal
                     // title="Update"
                     // centered

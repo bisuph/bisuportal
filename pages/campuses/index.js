@@ -85,8 +85,8 @@ export default function Campuses() {
                     return query.update({
                         name:values.name,
                         address:values.address,
-                        logo_name:state.fileList[0].name,
-                        logo:state.fileList[0].url,
+                        logo_name:state?.fileList[0]?.name ?? '',
+                        logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
                     })
                     .then(() => {
                         setState({...state,fileList:[],id:''})
@@ -103,8 +103,8 @@ export default function Campuses() {
                     query.set({
                         name:values.name,
                         address:values.address,
-                        logo_name:state.fileList[0].name,
-                        logo:state.fileList[0].url,
+                        logo_name:state?.fileList[0]?.name ?? '',
+                        logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
                     })
                     .then(function() {
                         setState({...state,fileList:[],id:''})

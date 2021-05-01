@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import CampusLayout from './component/campusLayout';
+import OfficeList from './component/officeList';
 
 const gridStyle = {
   width: '25%',
@@ -17,6 +18,8 @@ export default function Records ({...props}) {
     const router = useRouter()
     const {campus} = router.query   
     const [state,setState] = useState(null)
+
+
     useEffect(()=>{
         var docRef = db.collection("campus").doc(campus);
         docRef.get().then((doc) => {
@@ -29,12 +32,12 @@ export default function Records ({...props}) {
         }).catch((error) => {
             console.log("Error getting document:", error);
         })
-    },[])
+    },[campus])
 
     return(
         <CustomLayout >
             <CustomPageheader title={state?.name} icon={state?.logo}>
-            <CampusLayout />
+            <OfficeList campus={campus}/>
             </CustomPageheader>
         </CustomLayout>
     )

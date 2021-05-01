@@ -1,20 +1,20 @@
-import Head from 'next/head'
 import { PageHeader, Upload, Card, Tabs, Layout, Space, Button, Form, Input, message, Select, Progress } from 'antd';
 import { InboxOutlined , InfoCircleOutlined, SnippetsOutlined } from '@ant-design/icons';
-import dynamic from 'next/dynamic'
-import styled from 'styled-components'
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db, storage } from '../../services/firebase';
-import CustomPageheader from '../../component/customPageheader'
-import CustomLayout from '../../component/customLayout';
-import { getRecords } from '../../services/fecthData';
+import { getRecords, incrementFilesCount } from '../../services/fecthData';
 import _ from 'lodash'
-import { set } from 'nprogress';
+import { AccountContext } from '../../context/AccountContext';
+import { useRouter } from 'next/router';
 
 const { Dragger } = Upload;
 const { Option } = Select;
 
 export default function CreateRecord({...props}) {
+    const {office} = props
+    console.log(office.data)
+
+    const {account} = useContext(AccountContext)
     const [buttonDisable,setbuttonDisable] = useState(false)
     const [percent,setpercent] = useState(0)
     const [uploading, setUploading] = useState(false)
@@ -34,7 +34,6 @@ export default function CreateRecord({...props}) {
     
     useEffect(()=>{
         if(!_.isEmpty(props?.default)){
-            console.log(props?.default)
             const {description} = props?.default
             form.setFieldsValue({ description: description});
         }
@@ -54,123 +53,109 @@ export default function CreateRecord({...props}) {
         }
     }
 
-    const processUpload = async (fileList,docRef) => {
-        var upld = []
-        await fileList.forEach(async (file) => {
-            setUploading(!uploading)
-        
-            const storageRef = await storage.ref();
-            const fileRef = await storageRef.child(file.name);
-            var task = fileRef.put(file);
+    const processUpload = async (file) => {
+        const rand = (Math.floor((Math.random() * 1000) + 1))
+        const storageRef = await storage.ref();
+        const fileRef = await storageRef.child('files/'+rand+file.name);
+        var task = fileRef.put(file);
 
-            task.on('state_change',
-                function progress(snapshot){
-                    var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                    setpercent(progress)
-                },
-                (error) => {
-                    // Handle unsuccessful uploads
-                }, 
-                () => {
-                // Handle successful uploads on complete
-                // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-                task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
-                    const newUpld = {
-                        name : file.name,
-                        url : downloadURL,
-                        type : file.type,
-                    }
-                    upld.push(newUpld)
+        task.on('state_change',
+            function progress(snapshot){
+                var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                setpercent(progress)
+            },
+            (error) => {
+                // Handle unsuccessful uploads
+            }, 
+            () => {
+            task.snapshot.ref.getDownloadURL().then( async(downloadURL) => {
+                file.downloadURL = downloadURL
+                file.names = rand+file.name
+                setState(state => ({
+                    fileList: [...state.fileList, file],
+                }));
+                setpercent(0)
 
-                    await db.collection('UploadedFiles').doc(docRef.id).update({
-                        files : upld
-                    }).then(() => {
-                        setUploading(false)
-                        console.log("Document successfully updated!");
-                    })
-                    .catch((error) => {
-                        setUploading(false)
-                        // The document probably doesn't exist.
-                        console.error("Error updating document: ", error);
-                    });
-                });
-                }
-            )
-            
+            });
+            }
+        )
+    }
+
+    const processRemove = async (file) => {
+        const storageRef = await storage.ref();
+        const index = state.fileList.indexOf(file);
+        console.log(state.fileList[index])
+        var desertRef = storageRef.child('files/'+state.fileList[index].names);
+        // Delete the file
+        desertRef.delete().then(() => {
+            setState(state => {
+                const index = state.fileList.indexOf(file);
+                const newFileList = state.fileList.slice();
+                newFileList.splice(index, 1);
+
+                return {
+                    fileList: newFileList,
+                };
+            });
+        // File deleted successfully
+        }).catch((error) => {
+        // Uh-oh, an error occurred!
         });
     }
 
     const handleUpload = async (values) => {
-        if(!_.isEmpty(values?.description)){
-            setbuttonDisable(true)
-            setUploading(!uploading)
-
             auth().onAuthStateChanged((user) => {
                 if(user){
-
-                    let ref = db.collection('User').doc(user.email)
-
-                    ref.get()
-                    .then( snapshot => {  //DocSnapshot
-                        if (snapshot.exists) {
-                            if(props?.default){
-                                db.collection('UploadedFiles').doc(props?.default.id).update(values)
-                                setUploading(false)
-                                props?.onHide(false)
-                            }
-                            else {
-                                const { fileList } = state;
-
-                                const newData = {
-                                    description : values.description,
-                                    records : values.record,
-                                    uploader : user.email,
-                                    campus : snapshot.data().campus,
-                                    offices : snapshot.data().offices,
-                                }
-                                if(!_.isEmpty(newData)){
-                                    db.collection('UploadedFiles').add(newData)
-                                    .then((docRef) => {
-                                        
-                                        const process = processUpload(fileList,docRef)
-                                        process.then(function(result){
-                                            console.log('finish')
-                                            message.success('This is a success message');
-                                        })
-                                        console.log("Document written with ID: ", docRef.id);
-                                        // reset()
-                                    })
-                                    .catch((error) => {
-                                        setUploading(false)
-                                        console.error("Error adding document: ", error);
-                                    });
-                                }
-                            }
-                            
+                    var forUpload = []
+                    fileList.map( async (items,i)=>{
+                        const addItem = {
+                            name:items.names,
+                            url:items.downloadURL
                         }
+                        await forUpload.push(addItem)
                     })
+
+                    const forSave = {
+                        description:values.description,
+                        record:JSON.parse(values.record),
+                        files:forUpload,
+                        campus:account.campus,
+                        office:{
+                            id:office?.data.id,
+                            name:office?.data.name
+                        },
+                        uploadedBy:account.email
+                    }
+                 
+                    db.collection('uploaded').add(forSave)
+                    .then((docRef) => {
+                        message.success('Successfully saved');
+                        incrementFilesCount(office?.data.id,account.campus.id)
+                        .then(function(){
+                            window.location.reload()
+                        })
+                    })
+                    .catch((error) => {
+                        setUploading(false)
+                        console.error("Error adding document: ", error);
+                    });
                 }
             })
-        }
     }   
     
+
     const {fileList} = state
 
     const propers = {
         onRemove: file => {
-            setState(state => {
-            const index = state.fileList.indexOf(file);
-            const newFileList = state.fileList.slice();
-            newFileList.splice(index, 1);
-            return {
-                fileList: newFileList,
-            };
-            });
+            processRemove(file)
+            
         },
         beforeUpload: file => {
-            setState(state => ({
-                fileList: [...state.fileList, file],
-            }));
+            processUpload(file)
+            // setState(state => ({
+            //     fileList: [...state.fileList, file],
+            // }));
             return false;
         },
         fileList,
@@ -198,7 +183,7 @@ export default function CreateRecord({...props}) {
             {
                 !props?.default ?
                     <>
-                        <Form.Item name={'record'} label="Records" 
+                        <Form.Item name={'record'} label="Type" 
                             rules={[
                                 {
                                 required: true,
@@ -207,7 +192,7 @@ export default function CreateRecord({...props}) {
                         >
                             <Select style={{ width: '100%' }}  size={'large'}>
                                 {record.map(records => (
-                                <Option key={records}>{records}</Option>
+                                <Option key={JSON.stringify(records)}>{records.name}</Option>
                                 ))}
                             </Select>
                         </Form.Item>
