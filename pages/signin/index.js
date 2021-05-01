@@ -69,9 +69,9 @@ export default function Signin () {
       <Col sm={22} md={10} lg={10} xl={10}>
         <Space direction='vertical' align='center' style={{width:'100%'}} wrap={true}>
           <img src='https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' />
-          <Title style={{color:'#0567c1',marginBottom:0}} level={3} align='center'>Electronic Records Management System </Title>
+          <Title style={{color:'white',marginBottom:0}} level={3} align='center'>Electronic Records Management System </Title>
           {/* <Title style={{color:'#0567c1',marginBottom:0}} level={3} align='center'>Of</Title>  */}
-          <Title style={{color:'#0567c1'}} level={3} align='center'>Bohol Island State University</Title>
+          <Title style={{color:'white'}} level={3} align='center'>Bohol Island State University</Title>
         </Space>
       </Col>
       <Col xs={22} sm={16} md={10 } lg={8} xl={6}>
@@ -129,7 +129,7 @@ export default function Signin () {
       </Col>
       
     </Row>
-    <Footer style={{ textAlign: 'center' }}>Electronic Records Management System  ©2021</Footer>
+    <Footer style={{ textAlign: 'center' ,bottom:0,position:'fixed',width:'100%'}}>Electronic Records Management System  ©2021</Footer>
     </>
   );
 };
