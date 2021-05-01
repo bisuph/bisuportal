@@ -13,7 +13,6 @@ const { Dragger } = Upload;
 const { Option } = Select;
 
 export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
-    console.log(toUpdate)
     const {account} = useContext(AccountContext)
     const [fileExist,setFileExist] = useState([])
     const [buttonDisable,setbuttonDisable] = useState(false)
@@ -30,11 +29,15 @@ export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
     const {fileList} = state
 
     useEffect(()=>{
+        console.log(fileExist)
         form.setFieldsValue({description:toUpdate?.description,record:toUpdate?.record?.name})
         setVisible(mirror)
 
         if(toUpdate?.files.length > 0){
             setFileExist(toUpdate?.files)
+        }
+        else{
+            setFileExist([])
         }
         
         setState({...state,fileList:[]})
@@ -187,14 +190,11 @@ export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
         desertRef.delete().then(() => {
             var ex = _.clone(fileExist)
             ex.splice(i, 1);
+            console.log(ex)
             setFileExist(ex)
             db.collection('uploaded').doc(toUpdate.id).update({files:ex})
             .then((docRef) => {
                 message.success('Successfully updated');
-                incrementFilesCount(office?.data.id,account.campus.id)
-                .then(function(){
-                    window.location.reload()
-                })
             })
             .catch((error) => {
                 setUploading(false)
