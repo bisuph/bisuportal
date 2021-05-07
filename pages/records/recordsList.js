@@ -1,4 +1,4 @@
-import { Form, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Table, Select } from 'antd';
+import { Form, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Table, Select, message } from 'antd';
 import { PaperClipOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useState} from 'react';
 import { useRouter } from 'next/router'
@@ -7,6 +7,7 @@ import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedF
 import { AccountContext } from '../../context/AccountContext';
 import { filter } from 'lodash';
 import UpdateRecord from './updateRecord';
+import PasswordConfirm from '../campuses/component/passwordConfirm';
 
 const { Search } = Input;
 
@@ -23,6 +24,7 @@ export default function RecordsList({...props}) {
         list: [],
         
     })
+    const [password,setPassword] = useState(null)
 
    
     useEffect(()=>{
@@ -61,15 +63,18 @@ export default function RecordsList({...props}) {
     }
 
     const onPopConfirm = (record) => {
-        db.collection("uploaded").doc(record.id).delete().then(() => {
+        setPassword(record.id)
+    }
+
+    const afterResult = (id) => {
+        db.collection("uploaded").doc(id).delete().then(() => {
             decrementFilesCount(office,account?.campus?.id)
-            console.log("Document successfully deleted!");
+            message.success("Document successfully deleted!");
             refresh()
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
     }
-
 
     function filterText (obj,value) {
         const result = Object.values(obj).filter(obj2 => {
@@ -177,6 +182,7 @@ export default function RecordsList({...props}) {
                 bordered
             />
             <UpdateRecord mirror={visible} setMirror={setVisible} toUpdate={selected} office={office}/>
+            {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
         </Space>
                     // <Modal
                     // title="Update"

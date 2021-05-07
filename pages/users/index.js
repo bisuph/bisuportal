@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import { AccountContext } from '../../context/AccountContext';
 import { checkUserExist } from '../../services/fecthData';
+import PasswordConfirm from '../campuses/component/passwordConfirm';
 
     
 
@@ -26,6 +27,7 @@ export default function User() {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data,setData] = useState([])
     const [record,setRecord] = useState([])
+    const [password,setPassword] = useState(null)
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -182,10 +184,13 @@ export default function User() {
     };
 
     const onPopConfirm = (record) => {
-        setConfirmLoading(true)
-        db.collection("User").doc(record.id).delete().then(() => {
-            console.log("Document successfully deleted!");
-            setConfirmLoading(false)
+        setPassword(record.id)
+        
+    }
+
+    const afterResult = (id) => {
+        db.collection("User").doc(id).delete().then(() => {
+            message.success("Document successfully deleted!");
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
@@ -295,5 +300,6 @@ export default function User() {
         >
             <CreateUser form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
         </Modal>
+        {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
     </CustomLayout>)
 }

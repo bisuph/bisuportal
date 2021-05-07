@@ -1,4 +1,4 @@
-import { Form, Popconfirm, Button , Table, Modal, Space, Tag } from 'antd';
+import { Form, Popconfirm, Button , Table, Modal, Space, Tag, message } from 'antd';
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
 import React, { useContext, useEffect, useState } from 'react';
@@ -13,6 +13,7 @@ import {
 } from '@ant-design/icons';
 import moment from 'moment';
 import { AccountContext } from '../../context/AccountContext';
+import PasswordConfirm from '../campuses/component/passwordConfirm';
 
     
 
@@ -23,6 +24,7 @@ export default function Offices() {
     const [visible, setVisible] = useState(false);
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [data,setData] = useState([])
+    const [password,setPassword] = useState(null)
 
     useEffect(()=>{
         auth().onAuthStateChanged((user) => {
@@ -42,10 +44,6 @@ export default function Offices() {
                 });
             }
         })
-
-        // return () => {
-        //     unsubscribe()
-        // }
     },[db])
 
     const showModal = () => {
@@ -102,10 +100,12 @@ export default function Offices() {
     }
 
     const onPopConfirm = (record) => {
-        setConfirmLoading(true)
-        db.collection("office").doc(record.id).delete().then(() => {
-            console.log("Document successfully deleted!");
-            setConfirmLoading(false)
+        setPassword(record.id)
+    }
+
+    const afterResult = (id) => {
+        db.collection("office").doc(id).delete().then(() => {
+            message.success("Document successfully deleted!");
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
@@ -179,5 +179,6 @@ export default function Offices() {
         >
                 <CreateOffice form={form} handleOk={handleOk} handleCancel={handleCancel} confirmLoading={confirmLoading} visible={visible} genKey={genKey}/>
         </Modal>
+        {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
     </CustomLayout>)
 }

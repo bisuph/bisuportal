@@ -47,6 +47,7 @@ const Office = ({...props}) => {
     const changeTab = (page) => {
         setState({...state,activeKey:page,})
     }
+    console.log(account)
 
     return <CustomLayout >
         <CustomPageheader title={state.data?.name} icon={state.data?.logo} >
@@ -66,7 +67,8 @@ const Office = ({...props}) => {
                         <RecordsList office={state}  />
                     ))}
                 </TabPane>
-                <TabPane 
+                {((account.offices.id === office) &&(
+                    <TabPane 
                     tab={
                         <span>
                         <FormOutlined />
@@ -78,6 +80,7 @@ const Office = ({...props}) => {
                         <CreateRecord changeTab={changeTab} office={state}/>
                     ))}
                 </TabPane>
+                ))}
             </Tabs>
         )}
         </Card>

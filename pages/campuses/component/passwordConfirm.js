@@ -28,7 +28,6 @@ export default function PasswordConfirm ({open,setClose,afterResult}) {
         var user = fire.auth().currentUser;
         var credentials = auth.EmailAuthProvider.credential(account?.email, values.password);
         user.reauthenticateWithCredential(credentials).then(function(values){
-            console.log(values)
             message.success('Verification confirm')
             setClose(false)
             setVisble(false)
