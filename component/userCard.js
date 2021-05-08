@@ -1,13 +1,15 @@
 import { Card, Avatar, Popconfirm, Button,Radio,Space, message } from 'antd';
 import { EditTwoTone, DeleteTwoTone, EyeTwoTone , PlusCircleOutlined} from '@ant-design/icons';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { db } from './../services/firebase';
 import { useRouter } from 'next/router';
 import PasswordConfirm from '../pages/campuses/component/passwordConfirm';
+import { AccountContext } from '../context/AccountContext';
 
 const { Meta } = Card;
 
 export default function UserCard  ({item,cover,showModal}) {
+    const {account} = useContext(AccountContext)
     const router = useRouter()
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [password,setPassword] = useState(null)
@@ -34,12 +36,14 @@ export default function UserCard  ({item,cover,showModal}) {
                 item?.name ? 
                 [<Space size={[8, 16]} wrap>
                     <Button size='middle' type='dashed' onClick={()=> router.push('/campuses/'+decodeURI(item?.id))}><EyeTwoTone twoToneColor={"#52c41a"} key="View" /> View</Button>
-                    <Button size='middle' type='dashed' onClick={()=> showModal(item)}><EditTwoTone key="edit" /> Edit</Button>
+                    {(account?.role === 'Super Admin') && (
+                    <><Button size='middle' type='dashed' onClick={()=> showModal(item)}><EditTwoTone key="edit" /> Edit</Button>
                     <Popconfirm title="Delete？" okText="Yes" cancelText="No" onConfirm={()=>onDelete(item?.id)}>
                     <Button size='middle' type='dashed' >
                         <DeleteTwoTone twoToneColor={'#eb2f96'} /> Delete
                     </Button>
-                    </Popconfirm>
+                    </Popconfirm></>)}
+                    
                 </Space>]
                 :
                 ''

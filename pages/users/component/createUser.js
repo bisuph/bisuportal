@@ -37,6 +37,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
     const [loading, setLoading] = useState(false);
     const [campuses, setCampuses] = useState([])
     const [office, setOffice] = useState([])
+    const [visibility,setVisibility] = useState(true)
     useEffect(() => {
         var unsubscribe = null
         setLoading(true)
@@ -71,6 +72,15 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
         }
     },[genKey])
 
+    const onChangeRole = (value) => {
+        console.log(value)
+        if(!_.isEmpty(value)){
+            setVisibility(false)
+        }
+        else{
+            setVisibility(true)
+        }
+    }
     return(
             <Form form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 
@@ -91,34 +101,49 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 <Input size='large' autoComplete={'off'} />
                 </Form.Item>
 
-                <Form.Item name={'campus'} label="Campus" 
-                    rules={[
-                        {
-                        required: true,
-                        },
-                    ]}
-                >
-                        <Select size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
-                            {campuses.map(campus => (
-                                <Option key={JSON.stringify({name:campus.name,id:campus.id})}>{campus.name}</Option>
+                <Form.Item name={'role'} label="Higher Role" >
+                        <Select onChange={(value)=>onChangeRole(value)} size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
+                            {['','Super admin','University admin'].map(role => (
+                                <Option key={role}>{role}</Option>
                             ))}
                         </Select>
                     
                 </Form.Item>
+            {
+                (visibility && (
+                    <>
+                    <Form.Item name={'campus'} label="Campus" 
+                        rules={[
+                            {
+                            required: true,
+                            },
+                        ]}
+                    >
+                            <Select size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
+                                {campuses.map(campus => (
+                                    <Option key={JSON.stringify({name:campus.name,id:campus.id})}>{campus.name}</Option>
+                                ))}
+                            </Select>
+                        
+                    </Form.Item>
 
-                <Form.Item name={'offices'} label="Offices" loading={loading} 
-                    rules={[
-                        {
-                        required: true,
-                        },
-                    ]}
-                >
-                    <Select size='large' style={{ width: '100%' }}  >
-                        {office.map(offices => (
-                        <Option key={JSON.stringify({name:offices.name,id:offices.id,role:offices.role})}>{offices.name}</Option>
-                        ))}
-                    </Select>
-                </Form.Item>
+                    <Form.Item name={'offices'} label="Offices" loading={loading} 
+                        rules={[
+                            {
+                            required: true,
+                            },
+                        ]}
+                    >
+                        <Select size='large' style={{ width: '100%' }}  >
+                            {office.map(offices => (
+                            <Option key={JSON.stringify({name:offices.name,id:offices.id,role:offices.role})}>{offices.name}</Option>
+                            ))}
+                        </Select>
+                    </Form.Item>
+                </>
+                ))
+            }
+                
 
                 <Form.Item wrapperCol={{ ...layouts.wrapperCol}}
                     rules={[

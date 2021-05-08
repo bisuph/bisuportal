@@ -136,7 +136,6 @@ export default function User() {
 
                         checkUserExist(newValues?.email)
                         .then(function(data){
-                            console.log(data.length)
                             if(data.length === 0){
                                 if(!isJson(newValues.offices)) 
                                 {delete newValues.offices} else {newValues.offices = JSON.parse(newValues.offices);}

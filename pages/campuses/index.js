@@ -7,6 +7,7 @@ import CreatCampus from './component/createCampus';
 import { auth, db } from '../../services/firebase';
 import CustomPageheader from '../../component/customPageheader';
 import _ from 'lodash';
+import { AccountContext } from '../../context/AccountContext';
 const { v4: uuidv4 } = require('uuid');
   
 
@@ -20,6 +21,7 @@ const colCard = {
 }
 
 export default function Campuses() {
+    const {account} = useContext(AccountContext)
     const [state,setState] = useState(
         {
             id:'',
@@ -155,11 +157,16 @@ export default function Campuses() {
                 )
             })
         }
-            <Col  {...colCard}>
-                <UserCard 
-                    showModal={showModal}
-                />
-            </Col>
+            {
+                (account?.role === 'Super Admin' && (
+                    <Col  {...colCard}>
+                        <UserCard 
+                            showModal={showModal}
+                        />
+                    </Col>
+                ))
+            }
+            
         </Row>
         <Modal
             visible={visible}

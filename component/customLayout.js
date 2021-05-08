@@ -40,7 +40,7 @@ const menu = [
     title : "Campuses",
     route : "/campuses",
     icon :<ClusterOutlined />,
-    access : ['Super Admin']
+    access : ['Super Admin','University admin']
 
   },
   {
