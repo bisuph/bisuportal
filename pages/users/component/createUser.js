@@ -72,7 +72,6 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
         }
     },[genKey])
 
-    console.log(form.getFieldValue('email'))
     
     const onChangeRole = (value) => {
         console.log(value)
