@@ -100,3 +100,13 @@ export async function checkUserExist(email) {
     var snapshot = await db.collection("User").where('email','==',email).get()
     return snapshot.docs.map(doc => doc.data());
 }
+
+export async function checkCampusExist(name) {
+    var snapshot = await db.collection("campus").where('name','==',name).get()
+    return snapshot.docs.map(doc => doc.data());
+}
+
+export async function checkOfficeExist(name) {
+    var snapshot = await db.collection("office").where('name','==',name).get()
+    return snapshot.docs.map(doc => doc.data());
+}

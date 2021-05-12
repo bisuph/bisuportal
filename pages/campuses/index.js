@@ -1,4 +1,4 @@
-import { Form, Row, Col } from 'antd';
+import { Form, Row, Col, message } from 'antd';
 import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
 import CustomLayout from '../../component/customLayout';
@@ -8,6 +8,7 @@ import { auth, db } from '../../services/firebase';
 import CustomPageheader from '../../component/customPageheader';
 import _ from 'lodash';
 import { AccountContext } from '../../context/AccountContext';
+import { checkCampusExist } from '../../services/fecthData';
 const { v4: uuidv4 } = require('uuid');
   
 
@@ -82,43 +83,54 @@ export default function Campuses() {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 var query = null
-                if(!_.isEmpty(state?.id)){
-                    query = db.collection('campus').doc(state?.id)
-                    return query.update({
-                        name:values.name,
-                        address:values.address,
-                        logo_name:state?.fileList[0]?.name ?? '',
-                        logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
-                    })
-                    .then(() => {
-                        setState({...state,fileList:[],id:''})
-                        setVisible(false);
-                        setConfirmLoading(false);
-                    })
-                    .catch((error) => {
-                        // The document probably doesn't exist.
-                        console.error("Error updating document: ", error);
-                    });
-                }
-                else {
-                    query = db.collection('campus').doc()
-                    query.set({
-                        name:values.name,
-                        address:values.address,
-                        logo_name:state?.fileList[0]?.name ?? '',
-                        logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
-                    })
-                    .then(function() {
-                        setState({...state,fileList:[],id:''})
-                        setVisible(false);
-                        setConfirmLoading(false);
-                    })
-                    .catch(function(error) {
-                        console.error("Error adding document: ", error);
-                        setVisible(false);
-                    });
+                checkCampusExist(values.name)
+                .then(function(data){
+                    if(data.length === 0){
+                                
+                        if(!_.isEmpty(state?.id)){
+                            query = db.collection('campus').doc(state?.id)
+                            return query.update({
+                                name:values.name,
+                                address:values.address,
+                                logo_name:state?.fileList[0]?.name ?? '',
+                                logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
+                            })
+                            .then(() => {
+                                setState({...state,fileList:[],id:''})
+                                setVisible(false);
+                                setConfirmLoading(false);
+                            })
+                            .catch((error) => {
+                                // The document probably doesn't exist.
+                                console.error("Error updating document: ", error);
+                            });
+                        }
+                        else {
+                            query = db.collection('campus').doc()
+                            query.set({
+                                name:values.name,
+                                address:values.address,
+                                logo_name:state?.fileList[0]?.name ?? '',
+                                logo:state?.fileList[0]?.url ?? 'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' ,
+                            })
+                            .then(function() {
+                                setState({...state,fileList:[],id:''})
+                                setVisible(false);
+                                setConfirmLoading(false);
+                            })
+                            .catch(function(error) {
+                                console.error("Error adding document: ", error);
+                                setVisible(false);
+                            });
 
-                }
+                        }
+                    }
+                    else{
+                        message.error('Campus name already exists.')
+                        setConfirmLoading(false);
+                    }
+                })
+                
 
                 
             } else {

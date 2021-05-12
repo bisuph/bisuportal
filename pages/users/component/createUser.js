@@ -72,6 +72,8 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
         }
     },[genKey])
 
+    console.log(form.getFieldValue('email'))
+    
     const onChangeRole = (value) => {
         console.log(value)
         if(!_.isEmpty(value)){
@@ -98,7 +100,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                         icon: <InfoCircleOutlined />,
                     }}
                 >
-                <Input size='large' autoComplete={'off'} />
+                <Input size='large' autoComplete={'off'} readOnly={form.getFieldValue('email') === '' ? false : true}/>
                 </Form.Item>
 
                 <Form.Item name={'role'} label="Higher Role" >

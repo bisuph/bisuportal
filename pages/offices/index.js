@@ -14,6 +14,7 @@ import {
 import moment from 'moment';
 import { AccountContext } from '../../context/AccountContext';
 import PasswordConfirm from '../campuses/component/passwordConfirm';
+import { checkOfficeExist } from '../../services/fecthData';
 
     
 
@@ -57,26 +58,35 @@ export default function Offices() {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 var insert = _.clone(values) 
-                insert.created_by = user.email
-                var query = null
-                if(!_.isEmpty(genKey)){
-                    insert.updated_date = new Date()
-                    insert.updated_by = user.email
-                    query = db.collection('office').doc(genKey).update(insert)
-                }
-                else{
-                    insert.created_date = new Date()
-                    query = db.collection('office').doc().set(insert)
-                }
+                checkOfficeExist(insert.name).then(function(data){
+                    if(data.length === 0){
+                        insert.created_by = user.email
+                        var query = null
+                        if(!_.isEmpty(genKey)){
+                            insert.updated_date = new Date()
+                            insert.updated_by = user.email
+                            query = db.collection('office').doc(genKey).update(insert)
+                        }
+                        else{
+                            insert.created_date = new Date()
+                            query = db.collection('office').doc().set(insert)
+                        }
 
-                query.then(function() {
-                    form.setFieldsValue({ name: '' ,role:''});
-                    setVisible(false);
+                        query.then(function() {
+                            form.setFieldsValue({ name: '' ,role:''});
+                            setVisible(false);
+                        })
+                        .catch(function(error) {
+                            console.error("Error adding document: ", error);
+                            setVisible(false);
+                        });
+                    }
+                    else{
+                        message.error('Office name already exists.')
+                        setConfirmLoading(false);
+                    }
                 })
-                .catch(function(error) {
-                    console.error("Error adding document: ", error);
-                    setVisible(false);
-                });
+                
             } else {
                 router.push("/signin")
             }
