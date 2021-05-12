@@ -99,7 +99,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                         icon: <InfoCircleOutlined />,
                     }}
                 >
-                <Input size='large' autoComplete={'off'} readOnly={form.getFieldValue('email') === '' ? false : true}/>
+                <Input size='large' autoComplete={'off'} readOnly={form?.getFieldValue('email') === '' ? false : true}/>
                 </Form.Item>
 
                 <Form.Item name={'role'} label="Higher Role" >
