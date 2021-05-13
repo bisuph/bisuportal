@@ -81,10 +81,10 @@ export default function User() {
     const showModal = () => {
         setGenKey(null)
         if(account?.role === 'Admin'){
-            form.setFieldsValue({ email: "" , offices:""});
+            form.setFieldsValue({ email: "" , offices:"", role : ""});
         }
         else{
-            form.setFieldsValue({ email: "" , campus:"",offices:""});
+            form.setFieldsValue({ email: "" , campus:"",offices:"", role: ""});
         }
         setVisible(true);
     };
@@ -197,7 +197,7 @@ export default function User() {
 
     const onEdit = (record) => {
         setGenKey(record.id)
-        form.setFieldsValue({email:record?.email,campus:record?.campus?.name,offices:record?.offices?.name});
+        form.setFieldsValue({email:record?.email,role:record?.role,campus:record?.campus?.name,offices:record?.offices?.name});
         setVisible(true);
     }
 

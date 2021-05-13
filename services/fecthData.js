@@ -55,7 +55,6 @@ export async function getUser(email) {
     return snapshot.docs.map(doc => doc.data());
 }
 
-
 export async function incrementFilesCount(id,campus) {
     const snapshot = await  db.collection("office").doc(id)
     snapshot.update({
@@ -84,7 +83,6 @@ export async function decrementFilesCount(id,campus) {
     
 }
 
-
 export function getOfficesById(id) {
     const snapshot =  db.collection("office").doc(id)
     return snapshot.get().then((doc) => {
@@ -101,6 +99,11 @@ export async function checkUserExist(email) {
     return snapshot.docs.map(doc => doc.data());
 }
 
+export async function checkOfficeData(office) {
+    var snapshot = await db.collection("uploaded").where('office.name','==',office).get()
+    return snapshot.docs.map(doc => doc.data());
+}
+
 export async function checkCampusExist(name) {
     var snapshot = await db.collection("campus").where('name','==',name).get()
     return snapshot.docs.map(doc => doc.data());
@@ -110,3 +113,62 @@ export async function checkOfficeExist(name) {
     var snapshot = await db.collection("office").where('name','==',name).get()
     return snapshot.docs.map(doc => doc.data());
 }
+
+export async function checkCampusData(campus) {
+    var snapshot = await db.collection("uploaded").where('campus','==',campus).get()
+    return snapshot.docs.map(doc => doc.data());
+}
+
+
+export async function updateRemoveOffice(office) {
+    var snapshot = await db.collection("User").where('offices.id','==',office).get()
+    var list = snapshot.docs.map(doc => {
+        const newDoc = doc.data()
+        newDoc.id = doc.id
+        return newDoc
+    });
+    
+    list.map(item => 
+       {
+            var sfDocRef = db.collection("User").doc(item.id);
+            transactionRemove(sfDocRef,'offices')    
+        }
+    );
+    
+}
+
+export async function updateRemoveCampus(campus) {
+    var snapshot = await db.collection("User").where('campus.id','==',campus).get()
+    var list = snapshot.docs.map(doc => {
+        const newDoc = doc.data()
+        newDoc.id = doc.id
+        return newDoc
+    });
+    
+    list.map(item => 
+       {
+            var sfDocRef = db.collection("User").doc(item.id);
+            transactionRemove(sfDocRef,'campus')    
+        }
+    );
+    
+}
+
+export async function transactionRemove(snapshot,field){
+    return db.runTransaction((transaction) => {
+        // This code may get re-run multiple times if there are conflicts.
+        return transaction.get(snapshot).then((sfDoc) => {
+            if (!sfDoc.exists) {
+                throw "Document does not exist!";
+            }
+            var newData = sfDoc.data();
+            delete newData[field]
+            transaction.set(snapshot, newData);
+            return newData;
+        });
+    }).then(() => {
+        console.log("Transaction successfully committed!");
+    }).catch((error) => {
+        console.log("Transaction failed: ", error);
+    });
+}   

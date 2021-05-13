@@ -2,7 +2,6 @@ import { Form, Popconfirm, Button , Table, Modal, Space, Tag, message } from 'an
 import dynamic from 'next/dynamic'
 import CustomPageheader from '../../component/customPageheader'
 import React, { useContext, useEffect, useState } from 'react';
-const { v4: uuidv4 } = require('uuid');
 import { db, auth } from '../../services/firebase';
 import _ from 'lodash'
 const CreateOffice = dynamic(() => import('./component/createOffice'))
@@ -14,7 +13,7 @@ import {
 import moment from 'moment';
 import { AccountContext } from '../../context/AccountContext';
 import PasswordConfirm from '../campuses/component/passwordConfirm';
-import { checkOfficeExist } from '../../services/fecthData';
+import { checkOfficeData, checkOfficeExist, updateRemoveOffice } from '../../services/fecthData';
 
     
 
@@ -58,6 +57,7 @@ export default function Offices() {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 var insert = _.clone(values) 
+                insert.name = insert.name.toUpperCase()
                 checkOfficeExist(insert.name).then(function(data){
                     if(data.length === 0){
                         insert.created_by = user.email
@@ -106,21 +106,28 @@ export default function Offices() {
         setGenKey(record.id)
         form.setFieldsValue({ name: record.name, role: record.role });
         setVisible(true);
-
     }
 
     const onPopConfirm = (record) => {
-        setPassword(record.id)
+        checkOfficeData(record?.name).then(function(values){
+            console.log(values.length)
+            if(values?.length == 0){
+                setPassword(record.id)
+            }
+            else{
+                message.error('Uploaded file exist.')
+            }
+        })
     }
 
     const afterResult = (id) => {
         db.collection("office").doc(id).delete().then(() => {
+            updateRemoveOffice(id)
             message.success("Document successfully deleted!");
         }).catch((error) => {
             console.error("Error removing document: ", error);
         });
     }
-
 
     const columns = [
         {
@@ -172,10 +179,7 @@ export default function Offices() {
     
     return (<CustomLayout>
         <CustomPageheader title={'Offices'} extra={[
-            
             ['Super Admin'].includes(account?.role) ? <Button type="primary" icon={<PlusCircleOutlined />} size={"middle"} onClick={showModal}>Add</Button> : <></>
-            
-            
         ]}>
             <Table columns={columns} dataSource={data} scroll={{ x: 1300 }} loading={confirmLoading} style={{boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}/>
         </CustomPageheader>

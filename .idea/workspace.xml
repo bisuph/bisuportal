@@ -20,57 +20,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a79880da-2f50-4162-9fc8-af5d248d976f" name="Default Changelist" comment="first push">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/bisuportal.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/component/configLayout.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/component/customLayout.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/component/customPageheader.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/component/userCard.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/context/AccountContext.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/jsconfig.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/_app.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/accounts/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/accounts/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/accounts/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/api/hello.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/list/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/expenses/tabPane/type/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/login/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/logout/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/create.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/listOfMemo.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/list/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/records/tabPane/type/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/schools/component/add.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/schools/component/list.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/schools/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/signin/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/users/component/createUser.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/users/component/userList.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pages/users/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/favicon.ico" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/public/vercel.svg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/auth.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/fecthData.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/services/firebase.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/styles/Home.module.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/styles/globals.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/component/userCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/component/userCard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pages/offices/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/pages/offices/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/services/fecthData.js" beforeDir="false" afterPath="$PROJECT_DIR$/services/fecthData.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +46,10 @@
   </component>
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="a79880da-2f50-4162-9fc8-af5d248d976f" name="Default Changelist" comment="" />
@@ -115,15 +70,10 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="first push" />
     <option name="LAST_COMMIT_MESSAGE" value="first push" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="392" y="168" key="Vcs.Push.Dialog.v2" timestamp="1616587066309">
-      <screen x="0" y="0" width="1600" height="870" />
-    </state>
-    <state x="392" y="168" key="Vcs.Push.Dialog.v2/0.0.1600.870@0.0.1600.870" timestamp="1616587066309" />
   </component>
 </project>

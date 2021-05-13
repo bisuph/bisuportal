@@ -5,6 +5,7 @@ import { db, auth } from '../../../services/firebase';
 import { getCampuses, getOffices } from '../../../services/fecthData';
 import { useRouter } from 'next/router';
 import { AccountContext } from '../../../context/AccountContext';
+import _ from 'lodash';
 
 const layouts = {
     labelCol: {
@@ -38,8 +39,19 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
     const [campuses, setCampuses] = useState([])
     const [office, setOffice] = useState([])
     const [visibility,setVisibility] = useState(true)
+    const [roleVisble,setRoleVisble] = useState(false)
+    
     useEffect(() => {
-        var unsubscribe = null
+        const role = form?.getFieldValue('role')
+        if(!_.isEmpty(role)){
+            if(['Super admin','University admin'].includes(role)){
+                setRoleVisble(true)
+            }
+            else{
+                setRoleVisble(false)
+            }
+        }
+        console.log()
         setLoading(true)
         auth().onAuthStateChanged((user) => {
           if (user) {
@@ -60,21 +72,19 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 docRefOff.then(docsOff => {
                     setOffice(docsOff)
                 })
-            
+                
           } else {
             router.push("/signin")
           }
         })
         setLoading(false)
-      
+        
         return () => {
         //   unsubscribe()
         }
     },[genKey])
 
-    
     const onChangeRole = (value) => {
-        console.log(value)
         if(!_.isEmpty(value)){
             setVisibility(false)
         }
@@ -82,6 +92,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
             setVisibility(true)
         }
     }
+
     return(
             <Form form={form}  {...layouts} layout="vertical" name="nest-messages" onFinish={handleOk} validateMessages={validateMessages}>
                 
@@ -101,15 +112,18 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 >
                 <Input size='large' autoComplete={'off'} readOnly={form?.getFieldValue('email') === '' ? false : true}/>
                 </Form.Item>
-
-                <Form.Item name={'role'} label="Higher Role" >
+            {
+                ((roleVisble && ['Super Admin'].includes(account.role))  && (
+                    <Form.Item name={'role'} label="Higher Role" >
                         <Select onChange={(value)=>onChangeRole(value)} size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
-                            {['','Super admin','University admin'].map(role => (
+                            {['','Super Admin','University admin'].map(role => (
                                 <Option key={role}>{role}</Option>
                             ))}
                         </Select>
-                    
-                </Form.Item>
+                    </Form.Item>
+                ))
+            }
+                
             {
                 (visibility && (
                     <>

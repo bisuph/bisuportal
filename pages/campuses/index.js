@@ -9,8 +9,6 @@ import CustomPageheader from '../../component/customPageheader';
 import _ from 'lodash';
 import { AccountContext } from '../../context/AccountContext';
 import { checkCampusExist } from '../../services/fecthData';
-const { v4: uuidv4 } = require('uuid');
-  
 
 const colCard = {
     xs:24 ,
@@ -83,6 +81,7 @@ export default function Campuses() {
         auth().onAuthStateChanged((user) => {
             if (user) {
                 var query = null
+                values.name = values.name.toUpperCase()
                 checkCampusExist(values.name)
                 .then(function(data){
                     if(data.length === 0){
