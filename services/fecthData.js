@@ -115,7 +115,7 @@ export async function checkOfficeExist(name) {
 }
 
 export async function checkCampusData(campus) {
-    var snapshot = await db.collection("uploaded").where('campus','==',campus).get()
+    var snapshot = await db.collection("uploaded").where('campus.name','==',campus).get()
     return snapshot.docs.map(doc => doc.data());
 }
 
