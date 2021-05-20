@@ -39,9 +39,9 @@ export default function Dashboard() {
     <Row>
       <Col span={24}>
         <Space direction='vertical' align='center' style={{width:'100%'}}> 
-        <Title style={{color:'white'}} level={4}>Electronic Records Management System </Title>
-        <Title style={{color:'white'}} level={5}>Bohol Island State University</Title>
-        
+        <Title style={{color:'white'}} level={1}><b>Electronic Records Management System </b></Title>
+        <Title style={{color:'white'}} level={2}>Bohol Island State University</Title>
+      
         <img src={'https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png'} />
         </Space>
       </Col>

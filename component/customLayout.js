@@ -47,7 +47,9 @@ const menu = [
     key : "/offices",
     title : "Offices",
     route : "/offices",
-    icon :<ApartmentOutlined />
+    icon :<ApartmentOutlined />,
+    access : ['Super Admin','University admin']
+
   },
   {
     key : "/users",
@@ -218,7 +220,7 @@ const CustomLayout = ({...props}) => {
 
                 <Menu.Item key="1" style={{float:'right',color:'white!important'}} disabled>
                     <Button type="primary" icon={<BulbOutlined />} size={'large'}>
-                      {account?.offices?.name ?? 'Super Admin'}
+                      {account?.offices?.name ?? account?.role}
                     </Button>
                 </Menu.Item>
               </Menu>

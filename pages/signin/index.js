@@ -1,11 +1,11 @@
-import { Form, Input, Button, Checkbox, Layout, Row, Col, Card, Typography, message, Space } from 'antd';
+import { Form, Input, Button, Anchor, Layout, Row, Col, Card, Typography, message, Space } from 'antd';
 import { auth, fire } from '../../services/firebase';
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router'
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { checkUserExist } from '../../services/fecthData';
 
-const { Title } = Typography;
+const {  Title, Paragraph, Text, Link } = Typography;
 const { Footer } = Layout;
 
 export default function Signin () {
@@ -64,19 +64,27 @@ export default function Signin () {
 
   return (
     <>
+    <Anchor >
+        <Title  level={1} align='center' style={{textAlign:'left'}}>Electronic Records Management System </Title>
+    </Anchor>
     <Row justify="center" style={{marginTop:100,}}>
       
-      <Col sm={22} md={10} lg={10} xl={10}>
-        <Space direction='vertical' align='center' style={{width:'100%'}} wrap={true}>
+      <Col sm={22} md={12} lg={10} xl={10}>
+        <Space direction='vertical' align='center' style={{width:'100%',paddingRight:'150px'}} wrap={true}>
           <img src='https://upload.wikimedia.org/wikipedia/en/thumb/0/0c/Bohol_Island_State_University.png/200px-Bohol_Island_State_University.png' />
-          <Title style={{color:'white',marginBottom:0}} level={3} align='center'>Electronic Records Management System </Title>
+          <Title style={{color:'white',marginBottom:0}} level={3} align='center'>Bohol Island State University </Title>
           {/* <Title style={{color:'#0567c1',marginBottom:0}} level={3} align='center'>Of</Title>  */}
-          <Title style={{color:'white'}} level={3} align='center'>Bohol Island State University</Title>
+          <Typography>
+            <Paragraph style={{color:'white',fontSize:'17px'}}>
+            Raising S&T Education to Global Standards
+            BISU is committed to provide quality higher education in the arts and sciences, as well as in professional and technological fields; undertake research and development and extension services for the sustainable development of Bohol and the country.
+            </Paragraph>
+          </Typography>
         </Space>
       </Col>
       <Col xs={22} sm={16} md={10 } lg={8} xl={6}>
         
-        <Card title="Signin" style={{   borderRadius:'8px', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)' }}>
+        <Card title="Sign-in" style={{   borderRadius:'8px', boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)' }}>
             <Form
                 form={form}
                 name="basic"

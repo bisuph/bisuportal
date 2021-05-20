@@ -3,7 +3,7 @@ import { InboxOutlined , InfoCircleOutlined, SnippetsOutlined } from '@ant-desig
 import React, { useState, useEffect,useContext } from 'react';
 import { auth, db, storage } from '../../services/firebase';
 import { getRecords, incrementFilesCount } from '../../services/fecthData';
-import _ from 'lodash'
+import _, { identity } from 'lodash'
 import { AccountContext } from '../../context/AccountContext';
 import { useRouter } from 'next/router';
 
@@ -64,6 +64,7 @@ export default function CreateRecord({...props}) {
                 setpercent(progress)
             },
             (error) => {
+                console.log(error,'Errrror')
                 // Handle unsuccessful uploads
             }, 
             () => {
@@ -103,6 +104,9 @@ export default function CreateRecord({...props}) {
     }
 
     const handleUpload = async (values) => {
+        console.log(fileList.length)
+        if(fileList.length > 0)
+        {
             auth().onAuthStateChanged((user) => {
                 if(user){
                     var forUpload = []
@@ -140,6 +144,11 @@ export default function CreateRecord({...props}) {
                     });
                 }
             })
+        }
+        else {
+            message.error('No file uploaded.')   
+        }
+           
     }   
     
 
@@ -202,6 +211,11 @@ export default function CreateRecord({...props}) {
                             title: 'Tooltip with customize icon',
                             icon: <InfoCircleOutlined />,
                             }}
+                            rules={[
+                                {
+                                required: true,
+                                },
+                            ]}
                         >
                             <Dragger {...propers} fileList={state.fileList} multiple={true}>
                                 <p className="ant-upload-drag-icon">
@@ -229,7 +243,7 @@ export default function CreateRecord({...props}) {
             <Form.Item>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={uploading} disabled={buttonDisable}>Submit</Button>
-                    <Button loading={uploading} onClick={()=>reset()}>Cancel</Button>
+                    <Button loading={uploading} onClick={()=>reset()}>Reset</Button>
                 </Space>
             </Form.Item>
             </Form>
