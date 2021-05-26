@@ -5,9 +5,10 @@ import { useRouter } from 'next/router'
 import { auth, db } from '../../services/firebase';
 import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser } from '../../services/fecthData';
 import { AccountContext } from '../../context/AccountContext';
-import { filter } from 'lodash';
+import _ from 'lodash';
 import UpdateRecord from './updateRecord';
 import PasswordConfirm from '../campuses/component/passwordConfirm';
+import moment from 'moment';
 
 const { Search } = Input;
 
@@ -45,8 +46,8 @@ export default function RecordsList({...props}) {
                                 initLoading: false,
                                 list: docs,
                             });
+                            _.orderBy(docs, ['uploadedDate'], ['desc'])
                             setRecord(docs)
-
                         })
 
                     } else {
@@ -110,15 +111,6 @@ export default function RecordsList({...props}) {
           width: '30%',
         },
         {
-          title: 'Campus',
-          dataIndex: 'campus',
-          key: 'campus',
-          width: '20%',
-          render: campus => (
-              campus.name
-          )
-        },
-        {
             title: 'Record',
             dataIndex: 'record',
             key: 'office',
@@ -128,10 +120,19 @@ export default function RecordsList({...props}) {
             )
         },
         {
+            title: 'Uploaded Date',
+            dataIndex: 'uploadedDate',
+            key: 'uploaded',
+            width: '20%',
+            render : uploadedDate => <p>{(uploadedDate != undefined) ? moment(uploadedDate?.toDate()).format('YYYY-MM-DD') : ''}</p>
+            
+        },
+        {
             title: 'Uploaded by',
             dataIndex: 'uploadedBy',
             key: 'uploader',
             width: '20%',
+
         },
         {
             title: 'Files',

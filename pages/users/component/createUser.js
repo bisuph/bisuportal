@@ -51,7 +51,6 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 setRoleVisble(false)
             }
         }
-        console.log()
         setLoading(true)
         auth().onAuthStateChanged((user) => {
           if (user) {

@@ -110,7 +110,6 @@ export default function Offices() {
 
     const onPopConfirm = (record) => {
         checkOfficeData(record?.name).then(function(values){
-            console.log(values.length)
             if(values?.length == 0){
                 setPassword(record.id)
             }

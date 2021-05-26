@@ -104,7 +104,6 @@ export default function CreateRecord({...props}) {
     }
 
     const handleUpload = async (values) => {
-        console.log(fileList.length)
         if(fileList.length > 0)
         {
             auth().onAuthStateChanged((user) => {
@@ -127,7 +126,8 @@ export default function CreateRecord({...props}) {
                             id:office?.data.id,
                             name:office?.data.name
                         },
-                        uploadedBy:account.email
+                        uploadedBy:account.email,
+                        uploadedDate:new Date()
                     }
                  
                     db.collection('uploaded').add(forSave)

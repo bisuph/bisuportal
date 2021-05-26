@@ -32,7 +32,6 @@ const Signup = () => {
 
     useEffect(() => {
         auth().onAuthStateChanged((user) => {
-            console.log(user)
           if (user) {
             router.push("/")
           } 
@@ -51,7 +50,6 @@ const Signup = () => {
             } else {
                 checkUserExist(values.email)
                 .then(function(result){
-                    console.log(result)
                     if(result.length > 0){
                         auth().createUserWithEmailAndPassword(values.email, values.password)
                         .then((userCredential) => {

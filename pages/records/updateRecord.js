@@ -29,7 +29,6 @@ export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
     const {fileList} = state
 
     useEffect(()=>{
-        console.log(fileExist)
         form.setFieldsValue({description:toUpdate?.description,record:toUpdate?.record?.name})
         setVisible(mirror)
 
@@ -61,7 +60,6 @@ export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
     }
 
     const handleOk = (values) => {
-        console.log(values)
         auth().onAuthStateChanged((user) => {
             if(user){
                 var forUpload = []
@@ -190,7 +188,6 @@ export default function UpdateRecord ({setMirror,mirror,office,toUpdate}) {
         desertRef.delete().then(() => {
             var ex = _.clone(fileExist)
             ex.splice(i, 1);
-            console.log(ex)
             setFileExist(ex)
             db.collection('uploaded').doc(toUpdate.id).update({files:ex})
             .then((docRef) => {

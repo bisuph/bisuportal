@@ -18,7 +18,6 @@ export default function CampusLayout ({...props}) {
     const router = useRouter()
     const {campus} = router.query
 
-    console.log(campus)
     return(
        <OfficeList campus={campus}/>
     )
