@@ -155,6 +155,7 @@ const CustomLayout = ({...props}) => {
               {(!state.collapsed)&&(
               <Space direction='vertical' align='center' style={{width:'100%'}} visibility={false}>
               {account?.email}
+              {account?.role}
               {account?.campus?.name}
               </Space>)}
             </Menu.Item>

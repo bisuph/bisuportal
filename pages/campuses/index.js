@@ -1,4 +1,4 @@
-import { Form, Row, Col, message } from 'antd';
+import { Form, Row, Col, message, Button } from 'antd';
 import UserCard from '../../component/userCard'
 import React, { useContext, useEffect, useState } from 'react';
 import CustomLayout from '../../component/customLayout';
@@ -9,14 +9,15 @@ import CustomPageheader from '../../component/customPageheader';
 import _ from 'lodash';
 import { AccountContext } from '../../context/AccountContext';
 import { checkCampusExist } from '../../services/fecthData';
+import { PlusCircleOutlined } from '@ant-design/icons';
 
 const colCard = {
     xs:24 ,
     sm:12 ,
-    md:6 ,
-    lg:6 ,
-    xl:6 ,
-    xxl:6
+    md:12 ,
+    lg:8 ,
+    xl:8 ,
+    xxl:8
 }
 
 export default function Campuses() {
@@ -150,6 +151,10 @@ export default function Campuses() {
         <Row gutter={[16, 16]} style={{marginBottom:10}}>
             <Col span={24}>
             <CustomPageheader title={'Campuses'} extra={[
+                (account?.role === 'Super Admin' && (
+                    <Button type='primary' icon={<PlusCircleOutlined />} size='large' onClick={()=>showModal={showModal}}>   Add</Button>
+                ))
+                
             ]}>
             </CustomPageheader>
             </Col>
@@ -168,7 +173,7 @@ export default function Campuses() {
                 )
             })
         }
-            {
+            {/* {
                 (account?.role === 'Super Admin' && (
                     <Col  {...colCard}>
                         <UserCard 
@@ -176,7 +181,7 @@ export default function Campuses() {
                         />
                     </Col>
                 ))
-            }
+            } */}
             
         </Row>
         <Modal
