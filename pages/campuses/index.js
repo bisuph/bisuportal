@@ -85,7 +85,9 @@ export default function Campuses() {
                 values.name = values.name.toUpperCase()
                 checkCampusExist(values.name)
                 .then(function(data){
-                    if(data.length === 0){
+                    console.log(data)
+                    console.log(state)
+                    if(data.length === 0 || data[0].id ===  state.id){
                                 
                         if(!_.isEmpty(state?.id)){
                             query = db.collection('campus').doc(state?.id)
@@ -152,7 +154,7 @@ export default function Campuses() {
             <Col span={24}>
             <CustomPageheader title={'Campuses'} extra={[
                 (account?.role === 'Super Admin' && (
-                    <Button type='primary' icon={<PlusCircleOutlined />} size='large' onClick={()=>showModal={showModal}}>   Add</Button>
+                    <Button type='primary' icon={<PlusCircleOutlined />} size='large' onClick={()=>showModal()}>   Add</Button>
                 ))
                 
             ]}>

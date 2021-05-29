@@ -106,12 +106,20 @@ export async function checkOfficeData(office) {
 
 export async function checkCampusExist(name) {
     var snapshot = await db.collection("campus").where('name','==',name).get()
-    return snapshot.docs.map(doc => doc.data());
+    return snapshot.docs.map(doc => {
+        const newDoc = doc.data()
+        newDoc.id = doc.id
+        return newDoc
+    });
 }
 
 export async function checkOfficeExist(name) {
     var snapshot = await db.collection("office").where('name','==',name).get()
-    return snapshot.docs.map(doc => doc.data());
+    return snapshot.docs.map(doc => {
+        const newDoc = doc.data()
+        newDoc.id = doc.id
+        return newDoc
+    });
 }
 
 export async function checkCampusData(campus) {

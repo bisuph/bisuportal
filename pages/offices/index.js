@@ -59,7 +59,7 @@ export default function Offices() {
                 var insert = _.clone(values) 
                 insert.name = insert.name.toUpperCase()
                 checkOfficeExist(insert.name).then(function(data){
-                    if(data.length === 0){
+                    if(data.length === 0 ||  genKey === data[0].id){
                         insert.created_by = user.email
                         var query = null
                         if(!_.isEmpty(genKey)){
