@@ -6,7 +6,6 @@ import React, { useContext, useEffect, useState } from 'react';
 const { v4: uuidv4 } = require('uuid');
 import { db, auth } from '../../services/firebase';
 import _, { isString } from 'lodash'
-const CreateUser = dynamic(() => import('./component/createUser'))
 import CustomLayout from '../../component/customLayout';
 
 import {
@@ -14,7 +13,6 @@ import {
 } from '@ant-design/icons';
 import { AccountContext } from '../../context/AccountContext';
 import { checkUserExist, getArchivedFilesPerOffice, getUploadedFilesPerUser, incrementFilesCount } from '../../services/fecthData';
-import PasswordConfirm from '../campuses/component/passwordConfirm';
 import moment from 'moment';
 
     
