@@ -1,45 +1,48 @@
-import { Form, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Table, Select, message } from 'antd';
-import { PaperClipOutlined, DeleteOutlined, EditOutlined, ReconciliationOutlined } from '@ant-design/icons';
-import React, { useContext, useEffect, useState} from 'react';
+import { Form, Row, Col, Space, Input, Popconfirm, Button , Table, Modal, message, Tag, Card } from 'antd';
 import { useRouter } from 'next/router'
-import { auth, db } from '../../services/firebase';
-import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser } from '../../services/fecthData';
+import dynamic from 'next/dynamic'
+import CustomPageheader from '../../component/customPageheader'
+import React, { useContext, useEffect, useState } from 'react';
+const { v4: uuidv4 } = require('uuid');
+import { db, auth } from '../../services/firebase';
+import _, { isString } from 'lodash'
+const CreateUser = dynamic(() => import('./component/createUser'))
+import CustomLayout from '../../component/customLayout';
+
+import {
+    FileDoneOutlined, PaperClipOutlined
+} from '@ant-design/icons';
 import { AccountContext } from '../../context/AccountContext';
-import _ from 'lodash';
-import UpdateRecord from './updateRecord';
+import { checkUserExist, getArchivedFilesPerOffice, getUploadedFilesPerUser, incrementFilesCount } from '../../services/fecthData';
 import PasswordConfirm from '../campuses/component/passwordConfirm';
 import moment from 'moment';
 
-const { Search } = Input;
+    
 
-export default function RecordsList({...props}) {
+export default function Archive() {
     const {account} = useContext(AccountContext)
-    const [visible, setVisible] = useState(false);
     const router = useRouter()
     const {office} = router.query
     const [record,setRecord] = useState([])
-    const [selected,setSelected] = useState(null)
     const [state, setState] = useState({
         initLoading: true,
         loading: false,
         list: [],
         
     })
-    const [password,setPassword] = useState(null)
-
    
     useEffect(()=>{
         refresh()
-    },[account,visible])
+    },[account])
 
     const refresh = () => {
         auth().onAuthStateChanged((user) => {
             if(user){
-                var docRef = db.collection("office").doc(office);
+                var docRef = db.collection("office").doc(account?.offices?.id);
                 docRef.get().then((doc) => {
                     if (doc.exists) {
-
-                        const data = getUploadedFilesPerUser(doc.id,account?.campus?.id)
+                            
+                        const data = getArchivedFilesPerOffice(doc.id,account?.campus?.id)
                         // const data = getUploadedFilesPerAdmin(account?.campus.id)
                         data.then(docs => {
                             setState({
@@ -63,15 +66,11 @@ export default function RecordsList({...props}) {
         })
     }
 
-    const onPopConfirm = (record) => {
-        setPassword(record.id)
-    }
-
-    const onArchive = (record) => {
-        db.collection('archived').add(record)
+    const onRecord = (record) => {
+        db.collection('uploaded').add(record)
         .then((docRef) => {
-            db.collection("uploaded").doc(record.id).delete().then(() => {
-                decrementFilesCount(office,account?.campus?.id)
+            db.collection("archived").doc(record.id).delete().then(() => {
+                incrementFilesCount(account?.offices?.id,account?.campus?.id)
                 message.success("Document successfully archive!");
                 refresh()
             }).catch((error) => {
@@ -83,15 +82,6 @@ export default function RecordsList({...props}) {
         });
     }
 
-    const afterResult = (id) => {
-        db.collection("uploaded").doc(id).delete().then(() => {
-            decrementFilesCount(office,account?.campus?.id)
-            message.success("Document successfully deleted!");
-            refresh()
-        }).catch((error) => {
-            console.error("Error removing document: ", error);
-        });
-    }
 
     function filterText (obj,value) {
         const result = Object.values(obj).filter(obj2 => {
@@ -104,11 +94,6 @@ export default function RecordsList({...props}) {
             return true
         }
 
-    }
-
-    const onEditButton = (value) => {
-        setSelected(value)
-        setVisible(true)
     }
 
     const f_SearchData = async (e) => {
@@ -175,12 +160,8 @@ export default function RecordsList({...props}) {
             render: (record) => 
                 ((record.uploadedBy === account?.email)&&(
                     <Space>
-                        <Button type="primary"  icon={<EditOutlined />} onClick={() => onEditButton(record)} />
-                        <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
-                            <Button type="primary"  danger  icon={<DeleteOutlined />} size={'middles'} />
-                        </Popconfirm>
-                        <Popconfirm title="This record will move to archive, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onArchive(record)}>
-                            <Button type='default'  style={{background:'yellow'}}  icon={<ReconciliationOutlined />} size={'middles'} />
+                        <Popconfirm title="This record will move back  to records, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onRecord(record)}>
+                            <Button type='default'  style={{background:'yellow'}}  icon={<FileDoneOutlined />} size={'middles'} />
                         </Popconfirm>
                     </Space>
                 ))
@@ -188,8 +169,11 @@ export default function RecordsList({...props}) {
         },
        
       ];
-    return (
-        <Space direction={'vertical'} style={{width:'100%'}}>
+    
+    return (<CustomLayout >
+        <CustomPageheader title={'Archive'} extra={[
+        ]}>
+            <Space direction={'vertical'} style={{width:'100%'}}>
             <Card >
                 <Space direction='horizontal' style={{width:'100%'}}>
                 Search description : 
@@ -201,20 +185,7 @@ export default function RecordsList({...props}) {
                 dataSource={state.list}
                 bordered
             />
-            <UpdateRecord mirror={visible} setMirror={setVisible} toUpdate={selected} office={office}/>
-            {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
-        </Space>
-                    // <Modal
-                    // title="Update"
-                    // centered
-                    // visible={visible}
-                    // okButtonProps={{ hidden: true }}
-                    // cancelButtonProps={{ hidden: true }}
-                    // width={1000}
-                    // >
-                    // <Create default={defaultProps} onHide={setVisible}/>
-                    // </Modal>
-    )
+            </Space>
+        </CustomPageheader>
+    </CustomLayout>)
 }
-
-

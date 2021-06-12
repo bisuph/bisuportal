@@ -45,6 +45,15 @@ export async function getUploadedFilesPerUser(office,campus) {
     });
 }
 
+export async function getArchivedFilesPerOffice(office,campus) {
+    const snapshot = await  db.collection("archived").where("office.id", "==", office).where("campus.id", "==", campus).get()
+    return snapshot.docs.map(doc => {
+        var data = doc.data()
+        data.id = doc.id
+        return data
+    });
+}
+
 export async function getUploadedFilesPerAdmin(campus) {
     const snapshot = await  db.collection("uploaded").where("campus.id", "==", campus).get()
     return snapshot.docs.map(doc => doc.data());

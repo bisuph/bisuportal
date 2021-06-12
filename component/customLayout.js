@@ -7,7 +7,8 @@ import {
   BulbOutlined,
   FileDoneOutlined,
   ClusterOutlined,
-  UserAddOutlined
+  UserAddOutlined,
+  ReconciliationOutlined
 } from '@ant-design/icons';
 import { useRouter } from 'next/router'
 import { FaChartBar, FaSignOutAlt, FaKaaba, FaClipboardList, FaUserCog, FaUser } from "react-icons/fa";
@@ -49,6 +50,14 @@ const menu = [
     route : "/offices",
     icon :<ApartmentOutlined />,
     access : ['Super Admin','University admin']
+
+  },
+  {
+    key : "/archive",
+    title : "Archive",
+    route : "/archive",
+    icon :<ReconciliationOutlined />,
+    access : ['Admin','Member']
 
   },
   {
