@@ -3,7 +3,7 @@ import { PaperClipOutlined, DeleteOutlined, EditOutlined, ReconciliationOutlined
 import React, { useContext, useEffect, useState} from 'react';
 import { useRouter } from 'next/router'
 import { auth, db } from '../../services/firebase';
-import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser } from '../../services/fecthData';
+import { decrementFilesCount, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser, incrementArchivesCount } from '../../services/fecthData';
 import { AccountContext } from '../../context/AccountContext';
 import _ from 'lodash';
 import UpdateRecord from './updateRecord';
@@ -42,7 +42,7 @@ export default function RecordsList({...props}) {
                         const data = getUploadedFilesPerUser(doc.id,account?.campus?.id)
                         // const data = getUploadedFilesPerAdmin(account?.campus.id)
                         data.then(docs => {
-                            setState({
+                            setState({...state,
                                 initLoading: false,
                                 list: docs,
                             });
@@ -72,6 +72,7 @@ export default function RecordsList({...props}) {
         .then((docRef) => {
             db.collection("uploaded").doc(record.id).delete().then(() => {
                 decrementFilesCount(office,account?.campus?.id)
+                incrementArchivesCount(office,account?.campus?.id)
                 message.success("Document successfully archive!");
                 refresh()
             }).catch((error) => {

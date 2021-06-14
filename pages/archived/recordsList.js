@@ -1,49 +1,48 @@
-import { Form, Row, Col, Space, Input, Popconfirm, Button , Table, Modal, message, Tag, Card } from 'antd';
+import { Form, Upload, Card, Tabs, Popconfirm, Space, Button, Tag, Input, Table, Select, message } from 'antd';
+import { PaperClipOutlined, DeleteOutlined, EditOutlined, ReconciliationOutlined } from '@ant-design/icons';
+import React, { useContext, useEffect, useState} from 'react';
 import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
-import CustomPageheader from '../../component/customPageheader'
-import React, { useContext, useEffect, useState } from 'react';
-const { v4: uuidv4 } = require('uuid');
-import { db, auth } from '../../services/firebase';
-import _, { isString } from 'lodash'
-import CustomLayout from '../../component/customLayout';
-
-import {
-    FileDoneOutlined, PaperClipOutlined
-} from '@ant-design/icons';
+import { auth, db } from '../../services/firebase';
+import { decrementArchivesCount, decrementFilesCount, getArchivedFilesPerOffice, getRecords, getUploadedFilesPerAdmin, getUploadedFilesPerUser, incrementArchivesCount, incrementFilesCount } from '../../services/fecthData';
 import { AccountContext } from '../../context/AccountContext';
-import { checkUserExist, decrementArchivesCount, getArchivedFilesPerOffice, getUploadedFilesPerUser, incrementFilesCount } from '../../services/fecthData';
+import _ from 'lodash';
+import UpdateRecord from './updateRecord';
+import PasswordConfirm from '../campuses/component/passwordConfirm';
 import moment from 'moment';
 
-    
+const { Search } = Input;
 
-export default function Archive() {
+export default function RecordsList({...props}) {
     const {account} = useContext(AccountContext)
+    const [visible, setVisible] = useState(false);
     const router = useRouter()
     const {office} = router.query
     const [record,setRecord] = useState([])
+    const [selected,setSelected] = useState(null)
     const [state, setState] = useState({
         initLoading: true,
         loading: false,
         list: [],
         
     })
+    const [password,setPassword] = useState(null)
+
    
     useEffect(()=>{
         refresh()
-    },[account])
+    },[account,visible])
 
     const refresh = () => {
         auth().onAuthStateChanged((user) => {
             if(user){
-                var docRef = db.collection("office").doc(account?.offices?.id);
+                var docRef = db.collection("office").doc(office);
                 docRef.get().then((doc) => {
                     if (doc.exists) {
-                            
+
                         const data = getArchivedFilesPerOffice(doc.id,account?.campus?.id)
                         // const data = getUploadedFilesPerAdmin(account?.campus.id)
                         data.then(docs => {
-                            setState({
+                            setState({...state,
                                 initLoading: false,
                                 list: docs,
                             });
@@ -68,8 +67,9 @@ export default function Archive() {
         db.collection('uploaded').add(record)
         .then((docRef) => {
             db.collection("archived").doc(record.id).delete().then(() => {
-                decrementArchivesCount(account?.offices?.id,account?.campus?.id)
-                incrementFilesCount(account?.offices?.id,account?.campus?.id)
+                decrementArchivesCount(office,account?.campus?.id)
+                incrementFilesCount(office,account?.campus?.id)
+
                 message.success("Document successfully archive!");
                 refresh()
             }).catch((error) => {
@@ -81,6 +81,15 @@ export default function Archive() {
         });
     }
 
+    const afterResult = (id) => {
+        db.collection("uploaded").doc(id).delete().then(() => {
+            decrementFilesCount(office,account?.campus?.id)
+            message.success("Document successfully deleted!");
+            refresh()
+        }).catch((error) => {
+            console.error("Error removing document: ", error);
+        });
+    }
 
     function filterText (obj,value) {
         const result = Object.values(obj).filter(obj2 => {
@@ -160,7 +169,7 @@ export default function Archive() {
                 ((record.uploadedBy === account?.email)&&(
                     <Space>
                         <Popconfirm title="This record will move back  to records, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onRecord(record)}>
-                            <Button type='default'  style={{background:'yellow'}}  icon={<FileDoneOutlined />} size={'middles'} />
+                            <Button type='default'  style={{background:'yellow'}}  icon={<ReconciliationOutlined />} size={'middles'} />
                         </Popconfirm>
                     </Space>
                 ))
@@ -168,11 +177,8 @@ export default function Archive() {
         },
        
       ];
-    
-    return (<CustomLayout >
-        <CustomPageheader title={'Archive'} extra={[
-        ]}>
-            <Space direction={'vertical'} style={{width:'100%'}}>
+    return (
+        <Space direction={'vertical'} style={{width:'100%'}}>
             <Card >
                 <Space direction='horizontal' style={{width:'100%'}}>
                 Search description : 
@@ -184,7 +190,10 @@ export default function Archive() {
                 dataSource={state.list}
                 bordered
             />
-            </Space>
-        </CustomPageheader>
-    </CustomLayout>)
+            <UpdateRecord mirror={visible} setMirror={setVisible} toUpdate={selected} office={office}/>
+            {(password)&&(<PasswordConfirm open={password} setClose={setPassword} afterResult={afterResult}/>)}
+        </Space>
+    )
 }
+
+

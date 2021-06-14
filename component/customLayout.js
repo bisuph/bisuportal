@@ -55,7 +55,7 @@ const menu = [
   {
     key : "/archive",
     title : "Archive",
-    route : "/archive",
+    route : "/archived",
     icon :<ReconciliationOutlined />,
     access : ['Admin','Member']
 

@@ -13,8 +13,9 @@ import {
     PlusSquareOutlined, DeleteOutlined, EditOutlined
 } from '@ant-design/icons';
 import { AccountContext } from '../../context/AccountContext';
-import { checkUserExist } from '../../services/fecthData';
+import { checkUserExist, insertLogs } from '../../services/fecthData';
 import PasswordConfirm from '../campuses/component/passwordConfirm';
+import moment from 'moment';
 
     
 
@@ -124,8 +125,10 @@ export default function User() {
                         var query = db.collection('User').doc(genKey).update(newValues) 
                         
                         query.then(function() {
-                            setVisible(false);
-                            setGenKey(null)
+                            insertLogs('update',account.email,moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),'user',newValues).then(function(){
+                                setVisible(false);
+                                setGenKey(null)
+                            })
                         })
                         .catch(function(error) {
                             console.error("Error adding document: ", error);
@@ -154,8 +157,10 @@ export default function User() {
                                 var query = db.collection('User').doc().set(newValues) 
                                 
                                 query.then(function() {
-                                    setVisible(false);
-                                    setGenKey(null)
+                                    insertLogs('add',account.email,moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),'user',newValues).then(function(){
+                                        setVisible(false);
+                                        setGenKey(null)
+                                    })
                                 })
                                 .catch(function(error) {
                                     console.error("Error adding document: ", error);
@@ -183,12 +188,16 @@ export default function User() {
     };
 
     const onPopConfirm = (record) => {
-        setPassword(record.id)
+        setPassword(record)
         
     }
 
-    const afterResult = (id) => {
-        db.collection("User").doc(id).delete().then(() => {
+    const afterResult = (record) => {
+        db.collection("User").doc(record?.id).delete().then(() => {
+            insertLogs('delete',account.email,moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),'user',record).then(function(){
+                setVisible(false);
+                setGenKey(null)
+            })
             message.success("Document successfully deleted!");
         }).catch((error) => {
             console.error("Error removing document: ", error);

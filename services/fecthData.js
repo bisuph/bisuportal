@@ -92,6 +92,35 @@ export async function decrementFilesCount(id,campus) {
     
 }
 
+
+export async function incrementArchivesCount(id,campus) {
+    const snapshot = await  db.collection("office").doc(id)
+    snapshot.update({
+        'archive' : {[campus] : fire.firestore.FieldValue.increment(1)}
+    })
+    .then((docRef) => {
+        return docRef
+    })
+    .catch((error) => {
+        return error
+    });
+    
+}
+
+export async function decrementArchivesCount(id,campus) {
+    const snapshot = await  db.collection("office").doc(id)
+    snapshot.update({
+        'archive' : {[campus] : fire.firestore.FieldValue.increment(-1)}
+    })
+    .then((docRef) => {
+        return docRef
+    })
+    .catch((error) => {
+        return error
+    });
+    
+}
+
 export function getOfficesById(id) {
     const snapshot =  db.collection("office").doc(id)
     return snapshot.get().then((doc) => {
@@ -106,6 +135,16 @@ export function getOfficesById(id) {
 export async function checkUserExist(email) {
     var snapshot = await db.collection("User").where('email','==',email).get()
     return snapshot.docs.map(doc => doc.data());
+}
+
+export async function insertLogs(activity,user,datetime,module,data) {
+    var query = db.collection('logs').doc().set({activity,user,datetime,module,data}) 
+    query.then(function() {
+        return 'success'
+    })
+    .catch(function(error) {
+        console.error("Error adding document: ", error);
+    });
 }
 
 export async function checkOfficeData(office) {
