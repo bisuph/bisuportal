@@ -112,7 +112,7 @@ const CreateUser = ({form,handleOk,confirmLoading,handleCancel,genKey,...props})
                 <Input size='large' autoComplete={'off'} readOnly={form?.getFieldValue('email') === '' ? false : true}/>
                 </Form.Item>
             {
-                ((['Super Admin'].includes(account.role))  && (
+                ((['Super Admin'].includes(account?.role))  && (
                     <Form.Item name={'role'} label="Higher Role" >
                         <Select onChange={(value)=>onChangeRole(value)} size='large' style={{ width: '100%' }}  loading={loading} disabled={account?.role !== 'Super Admin' ? true : false}>
                             {['','Super Admin','University admin'].map(role => (
