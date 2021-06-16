@@ -72,7 +72,7 @@ export default function RecordsList({...props}) {
         .then((docRef) => {
             db.collection("uploaded").doc(record.id).delete().then(() => {
                 decrementFilesCount(office,account?.campus?.id)
-                incrementArchivesCount(office,account?.campus?.id)
+                incrementArchivesCount(account?.offices,account?.campus?.id)
                 message.success("Document successfully archive!");
                 refresh()
             }).catch((error) => {
@@ -174,17 +174,19 @@ export default function RecordsList({...props}) {
             fixed: 'right',
             width: 100,
             render: (record) => 
-                ((record.uploadedBy === account?.email)&&(
                     <Space>
+                    {((record.uploadedBy === account?.email)&&(
+                        <>
                         <Button type="primary"  icon={<EditOutlined />} onClick={() => onEditButton(record)} />
                         <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
                             <Button type="primary"  danger  icon={<DeleteOutlined />} size={'middles'} />
                         </Popconfirm>
+                        </>
+                    ))}
                         <Popconfirm title="This record will move to archive, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onArchive(record)}>
                             <Button type='default'  style={{background:'yellow'}}  icon={<ReconciliationOutlined />} size={'middles'} />
                         </Popconfirm>
                     </Space>
-                ))
         
         },
        

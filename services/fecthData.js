@@ -93,10 +93,10 @@ export async function decrementFilesCount(id,campus) {
 }
 
 
-export async function incrementArchivesCount(id,campus) {
-    const snapshot = await  db.collection("office").doc(id)
+export async function incrementArchivesCount(office,campus) {
+    const snapshot = await  db.collection("office").doc(office.id)
     snapshot.update({
-        'archive' : {[campus] : fire.firestore.FieldValue.increment(1)}
+        [`archive-${campus}`] : fire.firestore.FieldValue.increment(1)
     })
     .then((docRef) => {
         return docRef
@@ -110,7 +110,7 @@ export async function incrementArchivesCount(id,campus) {
 export async function decrementArchivesCount(id,campus) {
     const snapshot = await  db.collection("office").doc(id)
     snapshot.update({
-        'archive' : {[campus] : fire.firestore.FieldValue.increment(-1)}
+        [`archive-${campus}`] : fire.firestore.FieldValue.increment(-1)
     })
     .then((docRef) => {
         return docRef
@@ -118,7 +118,6 @@ export async function decrementArchivesCount(id,campus) {
     .catch((error) => {
         return error
     });
-    
 }
 
 export function getOfficesById(id) {

@@ -166,13 +166,13 @@ export default function RecordsList({...props}) {
             fixed: 'right',
             width: 100,
             render: (record) => 
-                ((record.uploadedBy === account?.email)&&(
+                // ((record.uploadedBy === account?.email)&&(
                     <Space>
                         <Popconfirm title="This record will move back  to records, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onRecord(record)}>
                             <Button type='default'  style={{background:'yellow'}}  icon={<ReconciliationOutlined />} size={'middles'} />
                         </Popconfirm>
                     </Space>
-                ))
+                // ))
         
         },
        

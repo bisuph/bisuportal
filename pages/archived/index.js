@@ -64,7 +64,7 @@ export default function Records () {
                     <Link href={"/archived/"+item.id}>
                     <Card style={{width:'100%',cursor:'pointer',boxShadow:'0 2px 4px rgb(0 0 0 / 10%), 0 8px 16px rgb(0 0 0 / 10%)'}}>
                         <Space >
-                        <Badge count={item?.archive?.[account?.campus?.id]}>
+                        <Badge count={item[`archive-${account?.campus?.id}`]}>
                             <Avatar shape={'square'} icon={<SolutionOutlined />} style={{ backgroundColor: '#1890ff' }} />
                         </Badge>
                         {item.name}

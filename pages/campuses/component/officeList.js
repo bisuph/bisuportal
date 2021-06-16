@@ -67,7 +67,7 @@ export default function OfficeList ({...props}) {
                     <Badge count={item[props?.campus]}>
                         <Button type='primary'  onClick={() => onModalOpen(item.id)}>Records</Button>
                     </Badge>,
-                    <Badge count={item?.archive?.[props?.campus]}>
+                    <Badge count={item[`archive-${props?.campus}`]}>
                         <Button danger type='primary' onClick={() => onModalArchiveOpen(item.id)}>Archive</Button>
                     </Badge>
 
