@@ -181,11 +181,12 @@ export default function RecordsList({...props}) {
                         <Popconfirm title="Are you sure？" okText="Yes" cancelText="No" onConfirm={()=>onPopConfirm(record)}>
                             <Button type="primary"  danger  icon={<DeleteOutlined />} size={'middles'} />
                         </Popconfirm>
-                        </>
-                    ))}
                         <Popconfirm title="This record will move to archive, click yes  to proceed." okText="Yes" cancelText="No" onConfirm={()=>onArchive(record)}>
                             <Button type='default'  style={{background:'yellow'}}  icon={<ReconciliationOutlined />} size={'middles'} />
                         </Popconfirm>
+                        </>
+                    ))}
+                        
                     </Space>
         
         },
